@@ -6,13 +6,33 @@ import { ComicGrid } from '@/components/comic/ComicGrid';
 import { ContinueReadingSection } from '@/components/comic/ContinueReadingSection';
 import { PaginatedComicCatalog } from '@/components/comic/PaginatedComicCatalog';
 import { getPopularComics, getFilteredComics } from '@/services/komikService';
+import { RecommendationRail } from '@/components/recommendation/RecommendationRail';
+import { buildComicTabs } from '@/components/recommendation/recommendationMappers';
 import { Flame, Loader2 } from 'lucide-react';
 
+const RECOMMENDATION_LIMIT = 12;
+const RECOMMENDATION_TYPES = [
+  { key: 'manhwa', label: 'Manhwa' },
+  { key: 'manga', label: 'Manga' },
+  { key: 'manhua', label: 'Manhua' },
+] as const;
+
 async function HomeComicsContent() {
-  const [popularComics, initialCatalog] = await Promise.all([
+  const [popularComics, initialCatalog, manhwa, manga, manhua] = await Promise.all([
     getPopularComics(),
     getFilteredComics({ page: 1 }),
+    ...RECOMMENDATION_TYPES.map(({ key }) =>
+      getFilteredComics({ type: key, sort: 'popular', limit: RECOMMENDATION_LIMIT })
+    ),
   ]);
+
+  const recommendationTabs = buildComicTabs(
+    RECOMMENDATION_TYPES.map(({ key, label }, idx) => ({
+      key,
+      label,
+      comics: [manhwa, manga, manhua][idx].comics,
+    }))
+  );
 
   const spotlightComics =
     popularComics.length > 0
@@ -26,6 +46,11 @@ async function HomeComicsContent() {
           <HeroBanner comics={spotlightComics} />
         </section>
       )}
+
+      <RecommendationRail
+        description="Pilihan komik terpopuler, lengkap dengan update terbaru."
+        tabs={recommendationTabs}
+      />
 
       <ContinueReadingSection />
 

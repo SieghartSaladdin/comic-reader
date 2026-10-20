@@ -38,53 +38,22 @@ export function parseOngoingAnimeList($: cheerio.CheerioAPI): AnimeListItem[] {
     const day = sanitizeRelativeTime(dayRaw);
 
     if (title && slug) {
-      let recentEpisodes:
-        | { title: string; slug: string; releaseTime: string }[]
-        | undefined;
-
+      // Listing hanya memuat episode terbaru; tidak ada data episode sebelumnya
       const match = ep.match(/(\d+)/);
-      if (match) {
-        const epNum = parseInt(match[1], 10);
-        if (!isNaN(epNum)) {
-          const baseSlug = slug
-            .replace(/-sub-indo$/, '')
-            .replace(/-episode-\d+.*$/, '');
-          const epLink = $el.find('a[href*="/episode/"]').attr('href');
-          const ep1Slug = epLink
-            ? extractSlugFromUrl(epLink)
-            : `${baseSlug}-episode-${epNum}-sub-indo`;
-
-          const prevNum = Math.max(1, epNum - 1);
-          recentEpisodes = [
-            {
-              title: `Eps. ${epNum}`,
-              slug: ep1Slug,
-              releaseTime: day || 'Baru saja',
-            },
-            {
-              title: `Eps. ${prevNum}`,
-              slug: `${baseSlug}-episode-${prevNum}-sub-indo`,
-              releaseTime: '7 hari yang lalu',
-            },
-          ];
-        }
-      }
-
-      // Pastikan fallback 2-baris jika nomor episode tidak ter-parse
-      if (!recentEpisodes) {
-        recentEpisodes = [
-          {
-            title: ep || 'Eps. Terbaru',
-            slug,
-            releaseTime: day || 'Baru saja',
-          },
-          {
-            title: 'Eps. Sebelumnya',
-            slug,
-            releaseTime: '7 hari yang lalu',
-          },
-        ];
-      }
+      const baseSlug = slug.replace(/-sub-indo$/, '').replace(/-episode-\d+.*$/, '');
+      const epLink = $el.find('a[href*="/episode/"]').attr('href');
+      const epSlug = epLink
+        ? extractSlugFromUrl(epLink)
+        : match
+        ? `${baseSlug}-episode-${parseInt(match[1], 10)}-sub-indo`
+        : slug;
+      const recentEpisodes = [
+        {
+          title: match ? `Eps. ${parseInt(match[1], 10)}` : ep || 'Eps. Terbaru',
+          slug: epSlug,
+          releaseTime: day || 'Baru saja',
+        },
+      ];
 
       list.push({
         slug,
@@ -107,7 +76,11 @@ export function parseSearchAnimeList($: cheerio.CheerioAPI): AnimeListItem[] {
   $('ul.chivsrc li').each((_, el) => {
     const $el = $(el);
     const a = $el.find('h2 a');
-    const title = cleanText(a.text());
+    // Hasil pencarian memuat embel-embel "(Episode 1 – 12) Subtitle Indonesia" pada judul.
+    const title = cleanText(a.text())
+      .replace(/\s*\((?:episode|eps)[^)]*\)/i, '')
+      .replace(/\s*(?:subtitle indonesia|sub indo)\s*$/i, '')
+      .trim();
     const link = a.attr('href') || '';
     const slug = extractSlugFromUrl(link);
     const coverRaw =

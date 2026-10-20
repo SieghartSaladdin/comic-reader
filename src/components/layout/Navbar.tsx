@@ -49,7 +49,7 @@ export const Navbar: React.FC = () => {
   }, [pathname]);
 
   const navLinks = [
-    { label: 'Beranda', href: '/', icon: BookOpen },
+    { label: 'Comic', href: '/', icon: BookOpen },
     { label: 'Anime', href: '/anime', icon: Tv },
     {
       label: 'Bookmarks',
@@ -70,14 +70,14 @@ export const Navbar: React.FC = () => {
             className="flex items-center gap-3 font-semibold tracking-tight text-zinc-900 dark:text-white group shrink-0"
           >
             <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center font-bold text-xs tracking-widest transition-transform group-hover:scale-105 shadow-xs">
-              CR
+              CA
             </div>
             <div className="flex flex-col">
               <span className="text-sm sm:text-base font-bold tracking-tight leading-none text-zinc-900 dark:text-white">
-                COMIC READER
+                COMIC AND ANIME
               </span>
               <span className="text-[10px] tracking-widest uppercase text-zinc-500 dark:text-zinc-400 font-medium">
-                Manga & Anime
+                Baca & Tonton
               </span>
             </div>
           </Link>

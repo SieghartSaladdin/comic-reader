@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio';
 import { ComicListItem } from '@/types/comic';
 import { parseAnimePostList } from './komikParser';
+import { enrichRecentChapters } from './komikEnrichService';
 
 const BASE_URL = 'https://komikindo.ch';
 const USER_AGENT =
@@ -20,6 +21,8 @@ export interface FilterComicParams {
   type?: 'all' | 'manga' | 'manhwa' | 'manhua';
   status?: 'all' | 'Ongoing' | 'Completed' | 'ongoing' | 'completed';
   sort?: 'latest' | 'popular' | 'rating' | 'title' | string;
+  /** Batasi jumlah hasil sebelum data chapter dilengkapi (hemat request). */
+  limit?: number;
 }
 
 export interface FilterComicResult {
@@ -139,6 +142,12 @@ export async function getFilteredComics(
     if (params.sort === 'rating') {
       comics = [...comics].sort((a, b) => b.rating - a.rating);
     }
+
+    if (params.limit && params.limit > 0) {
+      comics = comics.slice(0, params.limit);
+    }
+
+    comics = await enrichRecentChapters(comics);
 
     const hasNextPage =
       $('.pagination .next, .page-numbers.next, a.next, a[rel="next"]').length > 0;

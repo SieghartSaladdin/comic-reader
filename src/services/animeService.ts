@@ -6,6 +6,7 @@ import {
   parseAnimeDetailHtml,
   parseEpisodeStreamHtml,
 } from './animeParser';
+import { enrichRecentEpisodes } from './animeEnrichService';
 import {
   mockOngoingAnime,
   mockAnimeDetailMap,
@@ -37,7 +38,7 @@ export async function getOngoingAnime(): Promise<AnimeListItem[]> {
       const html = await res.text();
       const $ = cheerio.load(html);
       const list = parseOngoingAnimeList($);
-      if (list.length > 0) return list;
+      if (list.length > 0) return await enrichRecentEpisodes(list);
     }
 
     // Fallback ke halaman depan jika /ongoing-anime/ berbeda
@@ -49,7 +50,7 @@ export async function getOngoingAnime(): Promise<AnimeListItem[]> {
       const html = await homeRes.text();
       const $ = cheerio.load(html);
       const list = parseOngoingAnimeList($);
-      if (list.length > 0) return list;
+      if (list.length > 0) return await enrichRecentEpisodes(list);
     }
 
     return mockOngoingAnime;
@@ -76,7 +77,7 @@ export async function searchAnime(query: string): Promise<AnimeListItem[]> {
       const html = await res.text();
       const $ = cheerio.load(html);
       const list = parseSearchAnimeList($);
-      if (list.length > 0) return list;
+      if (list.length > 0) return await enrichRecentEpisodes(list);
     }
 
     // Filter dari mock jika live search kosong/gagal

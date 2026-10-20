@@ -18,10 +18,10 @@ export const Footer: React.FC = () => {
               className="inline-flex items-center gap-2.5 font-bold text-base tracking-tight text-zinc-900 dark:text-white group"
             >
               <div className="w-7 h-7 rounded-md bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center font-bold text-xs tracking-widest">
-                CR
+                CA
               </div>
               <span className="tracking-tight">
-                COMIC READER
+                COMIC AND ANIME
               </span>
             </Link>
             <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-sm leading-relaxed">
@@ -93,7 +93,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom bar */}
         <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-zinc-500 dark:text-zinc-500">
-          <p>© {currentYear} Comic Reader. Minimalist Editorial Architecture.</p>
+          <p>© {currentYear} Comic and Anime. Minimalist Editorial Architecture.</p>
           <div className="flex items-center gap-4">
             <span>Dirancang dengan fokus kenyamanan membaca</span>
           </div>

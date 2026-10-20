@@ -1,0 +1,45 @@
+export interface AnimeGenre {
+  slug: string;
+  label: string;
+}
+
+/** Daftar genre otakudesu (https://otakudesu.blog/genre-list/). */
+export const ANIME_GENRES: AnimeGenre[] = [
+  { slug: 'action', label: 'Action' },
+  { slug: 'adventure', label: 'Adventure' },
+  { slug: 'comedy', label: 'Comedy' },
+  { slug: 'demons', label: 'Demons' },
+  { slug: 'drama', label: 'Drama' },
+  { slug: 'ecchi', label: 'Ecchi' },
+  { slug: 'fantasy', label: 'Fantasy' },
+  { slug: 'game', label: 'Game' },
+  { slug: 'harem', label: 'Harem' },
+  { slug: 'historical', label: 'Historical' },
+  { slug: 'horror', label: 'Horror' },
+  { slug: 'isekai', label: 'Isekai' },
+  { slug: 'josei', label: 'Josei' },
+  { slug: 'magic', label: 'Magic' },
+  { slug: 'martial-arts', label: 'Martial Arts' },
+  { slug: 'mecha', label: 'Mecha' },
+  { slug: 'military', label: 'Military' },
+  { slug: 'music', label: 'Music' },
+  { slug: 'mystery', label: 'Mystery' },
+  { slug: 'psychological', label: 'Psychological' },
+  { slug: 'parody', label: 'Parody' },
+  { slug: 'police', label: 'Police' },
+  { slug: 'romance', label: 'Romance' },
+  { slug: 'samurai', label: 'Samurai' },
+  { slug: 'school', label: 'School' },
+  { slug: 'sci-fi', label: 'Sci-Fi' },
+  { slug: 'seinen', label: 'Seinen' },
+  { slug: 'shoujo', label: 'Shoujo' },
+  { slug: 'shoujo-ai', label: 'Shoujo Ai' },
+  { slug: 'shounen', label: 'Shounen' },
+  { slug: 'slice-of-life', label: 'Slice of Life' },
+  { slug: 'sports', label: 'Sports' },
+  { slug: 'space', label: 'Space' },
+  { slug: 'super-power', label: 'Super Power' },
+  { slug: 'supernatural', label: 'Supernatural' },
+  { slug: 'thriller', label: 'Thriller' },
+  { slug: 'vampire', label: 'Vampire' },
+];

@@ -51,7 +51,7 @@ export default function ComicDetailPage({ params }: ComicDetailPageProps) {
             className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Kembali ke Beranda</span>
+            <span>Kembali ke Comic</span>
           </Link>
         </div>
 

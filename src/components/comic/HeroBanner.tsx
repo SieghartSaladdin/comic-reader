@@ -38,7 +38,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ comics }) => {
   const displayBanner = fullComic.bannerImage || current.coverImage;
   const displayDesc =
     fullComic.description ||
-    `Nikmati bab terbaru dari ${current.title} dengan terjemahan bahasa Indonesia jernih dan tata letak berkualitas tinggi di Comic Reader.`;
+    `Nikmati bab terbaru dari ${current.title} dengan terjemahan bahasa Indonesia jernih dan tata letak berkualitas tinggi di Comic and Anime.`;
   const displayGenres =
     fullComic.genres && fullComic.genres.length > 0
       ? fullComic.genres

@@ -15,29 +15,30 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
   // Format konsisten 2 baris episode update
   const episodesToDisplay = (() => {
     if (anime.recentEpisodes && anime.recentEpisodes.length > 0) {
-      const list = [...anime.recentEpisodes.slice(0, 2)];
-      if (list.length === 1) {
-        list.push({
-          title: 'Eps. Sebelumnya',
-          slug: anime.slug,
-          releaseTime: '7 hari yang lalu',
-        });
-      }
-      return list;
+      return anime.recentEpisodes.slice(0, 2);
     }
-    return [
-      {
-        title: anime.latestEpisode || 'Eps. Terbaru',
-        slug: anime.slug,
-        releaseTime: anime.releaseDay || 'Baru saja',
-      },
-      {
-        title: 'Eps. Sebelumnya',
-        slug: anime.slug,
-        releaseTime: '7 hari yang lalu',
-      },
-    ];
+    // Anime tamat / hasil genre: tampilkan jumlah episode, bukan episode terbaru palsu.
+    if (anime.episodeCount) {
+      return [
+        {
+          title: anime.episodeCount,
+          slug: anime.slug,
+          releaseTime: anime.status === 'Tamat' ? 'Tamat' : '',
+        },
+      ];
+    }
+    if (anime.latestEpisode) {
+      return [
+        {
+          title: anime.latestEpisode,
+          slug: anime.slug,
+          releaseTime: anime.releaseDay || 'Baru saja',
+        },
+      ];
+    }
+    return [];
   })();
+  const genreLine = anime.genres?.slice(0, 2).join(' · ');
 
   return (
     <div className="group relative flex flex-col rounded-2xl bg-white dark:bg-[#121214] border border-zinc-200/90 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 p-2.5 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
@@ -118,7 +119,19 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
           </h3>
         </Link>
 
+        {genreLine && (
+          <p className="mt-0.5 truncate text-[10px] text-zinc-500 dark:text-zinc-400">{genreLine}</p>
+        )}
+
         <div className="border-t border-zinc-100 dark:border-zinc-800/80 pt-2 mt-2 space-y-1">
+          {episodesToDisplay.length === 0 && (
+            <Link
+              href={`/anime/${anime.slug}`}
+              className="text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:underline"
+            >
+              Lihat detail
+            </Link>
+          )}
           {episodesToDisplay.map((ep, idx) => {
             const isWatchLink = ep.slug && ep.slug.toLowerCase().includes('episode');
             const href = isWatchLink ? `/anime/watch/${ep.slug}` : `/anime/${anime.slug}`;

@@ -6,6 +6,7 @@ import {
   parseChapterDetailHtml,
   ChapterDetailResult,
 } from './komikParser';
+import { enrichRecentChapters } from './komikEnrichService';
 
 const BASE_URL = 'https://komikindo.ch';
 const USER_AGENT =
@@ -34,7 +35,7 @@ export async function getPopularComics(): Promise<ComicListItem[]> {
     const selector = $('.mangapopuler .animepost').length
       ? '.mangapopuler .animepost'
       : '.listupd:first-of-type .animepost';
-    return parseAnimePostList($, selector);
+    return await enrichRecentChapters(parseAnimePostList($, selector));
   } catch (error) {
     console.error('getPopularComics error:', error);
     return [];
@@ -54,7 +55,7 @@ export async function getLatestComics(): Promise<ComicListItem[]> {
 
     const html = await res.text();
     const $ = cheerio.load(html);
-    return parseAnimePostList($);
+    return await enrichRecentChapters(parseAnimePostList($));
   } catch (error) {
     console.error('getLatestComics error:', error);
     return [];
@@ -77,7 +78,7 @@ export async function searchComics(query: string): Promise<ComicListItem[]> {
 
     const html = await res.text();
     const $ = cheerio.load(html);
-    return parseAnimePostList($);
+    return await enrichRecentChapters(parseAnimePostList($));
   } catch (error) {
     console.error('searchComics error:', error);
     return [];

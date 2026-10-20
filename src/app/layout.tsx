@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Comic Reader - Platform Webtoon, Manga & Anime Modern',
-  description: 'Baca komik webtoon dan manga favorit Anda secara online dan offline dengan pengalaman visual minimalis dan elegan.',
+  title: 'Comic and Anime - Baca Komik & Nonton Anime Sub Indo',
+  description: 'Baca komik webtoon, manga, dan manhwa serta nonton anime subtitle Indonesia dalam satu tempat dengan pengalaman visual minimalis dan elegan.',
 };
 
 export default function RootLayout({

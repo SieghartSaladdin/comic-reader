@@ -66,30 +66,15 @@ export function parseAnimePostList(
       const chTitle = $(a).text().trim();
       const chSlug = extractSlugFromUrl($(a).attr('href') || '');
       const rawDateText = $(a).next('.datech, span').text().trim();
-      const dateText = sanitizeRelativeTime(rawDateText) || (idx === 0 ? timeRaw : '7 hari yang lalu');
+      const dateText = sanitizeRelativeTime(rawDateText) || (idx === 0 ? timeRaw : '');
       if (chSlug && chTitle) {
         recentChapters.push({
           title: chTitle.startsWith('Ch.') || chTitle.startsWith('Chapter') ? chTitle : `Ch. ${chTitle}`,
           slug: chSlug,
-          releaseTime: dateText || (idx === 0 ? 'Baru saja' : '7 hari yang lalu'),
+          releaseTime: dateText || 'Baru saja',
         });
       }
     });
-
-    // Jika di DOM hanya tertera 1 chapter, buat entri chapter sebelumnya sebagai fallback:
-    if (recentChapters.length === 1) {
-      const first = recentChapters[0];
-      const match = first.title.match(/(?:ch\.?|chapter)\s*(\d+(?:\.\d+)?)/i);
-      if (match) {
-        const prevNum = Math.max(1, Math.floor(parseFloat(match[1]) - 1));
-        const prevSlug = first.slug.replace(/(?:chapter|ch)-?\d+/i, `chapter-${prevNum}`);
-        recentChapters.push({
-          title: `Ch. ${prevNum}`,
-          slug: prevSlug,
-          releaseTime: '7 hari yang lalu',
-        });
-      }
-    }
 
     comics.push({
       id: slug,
@@ -196,7 +181,9 @@ export function parseComicDetailHtml($: cheerio.CheerioAPI, slug: string): Comic
     ? chapters.slice(0, 2).map((ch, idx) => ({
         title: ch.title.startsWith('Ch.') || ch.title.startsWith('Chapter') ? ch.title : `Ch. ${ch.title}`,
         slug: ch.slug,
-        releaseTime: sanitizeRelativeTime(ch.releaseDate) || (idx === 0 ? 'Baru saja' : '7 hari yang lalu'),
+        releaseTime:
+          sanitizeRelativeTime(ch.releaseDate) ||
+          (idx === 0 ? 'Baru saja' : sanitizeRelativeTime(chapters[0].releaseDate) || 'Baru saja'),
       }))
     : undefined;
 

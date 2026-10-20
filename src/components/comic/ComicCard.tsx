@@ -91,39 +91,14 @@ export const ComicCard: React.FC<ComicCardProps> = ({ comic }) => {
           slug: latestSlug,
           releaseTime: comic.updatedTime || 'Baru saja',
         });
-        if (match) {
-          const prevNum = Math.max(1, Math.floor(parseFloat(match[1]) - 1));
-          const prevSlug = latestSlug.replace(/(?:chapter|ch)-?\d+/i, `chapter-${prevNum}`);
-          list.push({
-            title: `Ch. ${prevNum}`,
-            slug: prevSlug,
-            releaseTime: '7 hari yang lalu',
-          });
-        }
       }
     }
 
-    // Pastikan konsisten selalu memiliki 2 baris
     if (list.length === 0) {
-      list.push(
-        {
-          title: 'Ch. Terbaru',
-          slug: '',
-          releaseTime: comic.updatedTime || 'Baru saja',
-        },
-        {
-          title: 'Ch. Sebelumnya',
-          slug: '',
-          releaseTime: '7 hari yang lalu',
-        }
-      );
-    } else if (list.length === 1) {
-      const match = list[0].title.match(/(?:chapter|ch\.?)\s*(\d+(?:\.\d+)?)/i);
-      const prevNum = match ? Math.max(1, Math.floor(parseFloat(match[1]) - 1)) : null;
       list.push({
-        title: prevNum !== null ? `Ch. ${prevNum}` : 'Ch. Sebelumnya',
-        slug: list[0].slug ? list[0].slug.replace(/(?:chapter|ch)-?\d+/i, `chapter-${prevNum || 1}`) : '',
-        releaseTime: '7 hari yang lalu',
+        title: 'Ch. Terbaru',
+        slug: '',
+        releaseTime: comic.updatedTime || 'Baru saja',
       });
     }
 

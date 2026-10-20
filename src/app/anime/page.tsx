@@ -3,19 +3,27 @@ export const dynamic = 'force-dynamic';
 import React from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { AnimeGrid } from '@/components/anime/AnimeGrid';
+import { AnimeCatalog } from '@/components/anime/AnimeCatalog';
 import { getOngoingAnime } from '@/services/animeService';
+import { getAnimeCatalog } from '@/services/animeCatalogService';
+import { getAnimeRecommendationGroups } from '@/services/animeRecommendationService';
+import { RecommendationRail } from '@/components/recommendation/RecommendationRail';
+import { buildAnimeTabs } from '@/components/recommendation/recommendationMappers';
 import { Tv, PlayCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Nonton Anime Sub Indo Terlengkap | Comic Reader Anime Mirror',
+  title: 'Nonton Anime Sub Indo Terlengkap | Comic and Anime',
   description:
     'Streaming anime subtitle Indonesia gratis update setiap hari dengan antarmuka minimalis elegan.',
 };
 
 export default async function AnimePage() {
-  const ongoingList = await getOngoingAnime();
+  const [ongoingList, recommendationGroups, initialCatalog] = await Promise.all([
+    getOngoingAnime(),
+    getAnimeRecommendationGroups(),
+    getAnimeCatalog({ page: 1 }),
+  ]);
   const featured = ongoingList.slice(0, 3);
 
   return (
@@ -90,13 +98,14 @@ export default async function AnimePage() {
           </div>
         </div>
 
-        {/* Main Anime Grid Section */}
+        <RecommendationRail
+          description="Update terbaru, anime tamat berating tinggi, dan pilihan per genre."
+          tabs={buildAnimeTabs(recommendationGroups)}
+        />
+
+        {/* Katalog seluruh anime: pencarian, filter, dan pagination */}
         <div id="anime-grid">
-          <AnimeGrid
-            animeList={ongoingList}
-            title="Anime Ongoing Terbaru"
-            description="Serial anime yang saat ini sedang aktif tayang tiap minggu di Jepang dengan takarir Bahasa Indonesia"
-          />
+          <AnimeCatalog initialResult={initialCatalog} />
         </div>
       </main>
 
