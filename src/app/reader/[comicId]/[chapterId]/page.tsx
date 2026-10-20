@@ -13,6 +13,8 @@ import { useReaderProgress } from '@/hooks/useReaderProgress';
 import { WebtoonReader } from '@/components/reader/WebtoonReader';
 import { MangaReader } from '@/components/reader/MangaReader';
 import { ReaderControls, ChapterNavItem } from '@/components/reader/ReaderControls';
+import { ReaderBottomBar } from '@/components/reader/ReaderBottomBar';
+import { useHideOnUserScroll } from '@/hooks/useHideOnUserScroll';
 import { ReaderSettingsModal } from '@/components/reader/ReaderSettingsModal';
 
 interface ReaderPageProps {
@@ -76,6 +78,10 @@ function ReaderContent({ params }: ReaderPageProps) {
     setControlsVisible((prev) => !prev);
   }, []);
 
+  // Sembunyikan bar saat pengguna scroll lagi
+  const hideControls = useCallback(() => setControlsVisible(false), []);
+  useHideOnUserScroll(controlsVisible, hideControls);
+
   // Keyboard shortcut for space bar (toggle controls) and F (fullscreen)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -104,6 +110,7 @@ function ReaderContent({ params }: ReaderPageProps) {
         id: ch.id || ch.slug,
         chapterNumber: ch.chapterNumber,
         title: ch.title,
+        releaseDate: ch.releaseDate,
       }));
     }
     if (chapter) {
@@ -205,14 +212,27 @@ function ReaderContent({ params }: ReaderPageProps) {
   }
 
   return (
+    // Jangan pasang `filter` di wrapper ini: filter membuat elemen `fixed` (bar, modal)
+    // menempel ke dokumen, bukan ke layar.
     <div
       className={`min-h-screen flex flex-col transition-colors duration-200 select-none ${getBgClass()}`}
-      style={{ filter: `brightness(${settings.brightness}%)` }}
     >
       {/* Top and Bottom Controls Overlay */}
       <ReaderControls
         isVisible={controlsVisible}
         comicId={comicId}
+        comicTitle={comic.title}
+        chapterTitle={chapter.title}
+        chapterNumber={chapter.chapterNumber}
+        chapters={chapters}
+        currentChapterId={chapterId}
+        onSelectChapter={handleSelectChapter}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+      />
+
+      {/* Bottom bar: muncul saat layar di-tap, hilang saat pengguna scroll */}
+      <ReaderBottomBar
+        isVisible={controlsVisible}
         comicTitle={comic.title}
         chapterTitle={chapter.title}
         chapterNumber={chapter.chapterNumber}
@@ -232,7 +252,10 @@ function ReaderContent({ params }: ReaderPageProps) {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 flex flex-col items-center justify-center w-full pt-14 pb-14">
+      <main
+        className="flex-1 flex flex-col items-center justify-center w-full pt-14 pb-14"
+        style={{ filter: `brightness(${settings.brightness}%)` }}
+      >
         {settings.readingMode === 'webtoon' ? (
           <WebtoonReader
             pages={chapter.pages}
