@@ -53,6 +53,36 @@ export function buildFilterUrl(params: FilterComicParams): string {
   const rawStatus = params.status?.toLowerCase();
   const sort = params.sort || 'latest';
 
+  const isDefaultStatus = !rawStatus || rawStatus === 'all';
+  const isDefaultSort = !sort || sort === 'latest';
+
+  // Utamakan URL dengan .lsch jika filter tidak kompleks
+  if (isDefaultStatus && isDefaultSort) {
+    if (normalizedGenres.length === 0) {
+      if (rawType === 'manhwa') {
+        const path = page > 1 ? `/manhwa/page/${page}/` : '/manhwa/';
+        return new URL(path, BASE_URL).toString();
+      }
+      if (rawType === 'manga') {
+        const path = page > 1 ? `/manga/page/${page}/` : '/manga/';
+        return new URL(path, BASE_URL).toString();
+      }
+      if (rawType === 'manhua') {
+        const path = page > 1 ? `/manhua/page/${page}/` : '/manhua/';
+        return new URL(path, BASE_URL).toString();
+      }
+      const path = page > 1 ? `/komik-terbaru/page/${page}/` : '/komik-terbaru/';
+      return new URL(path, BASE_URL).toString();
+    }
+
+    if (normalizedGenres.length === 1 && (!rawType || rawType === 'all')) {
+      const g = normalizedGenres[0];
+      const path = page > 1 ? `/genres/${g}/page/${page}/` : `/genres/${g}/`;
+      return new URL(path, BASE_URL).toString();
+    }
+  }
+
+  // Katalog statis /daftar-manga/ untuk filter kustom (multi-genre, status, sort kustom)
   const basePath = page > 1 ? `/daftar-manga/page/${page}/` : '/daftar-manga/';
   const url = new URL(basePath, BASE_URL);
 

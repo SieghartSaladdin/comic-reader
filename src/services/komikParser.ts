@@ -9,6 +9,7 @@ import {
   parseType,
   parseStatus,
   extractSlugFromUrl,
+  sanitizeRelativeTime,
 } from './komikParserUtils';
 import {
   ChapterDetailResult,
@@ -20,6 +21,7 @@ export {
   parseType,
   parseStatus,
   extractSlugFromUrl,
+  sanitizeRelativeTime,
   type ChapterDetailResult,
   parseChapterDetailHtml,
 };
@@ -54,7 +56,7 @@ export function parseAnimePostList(
     const latestChapTitle = latestChapLink.text().trim();
     const latestChapSlug = extractSlugFromUrl(latestChapLink.attr('href') || '');
 
-    const timeRaw = $el.find('.lsch .datech, .datech, .dt').first().text().replace(/\s+/g, ' ').trim();
+    const timeRaw = sanitizeRelativeTime($el.find('.lsch .datech, .datech, .dt').first().text().replace(/\s+/g, ' ').trim());
     const chapLinks = $el.find('.lsch a');
     const chapCount = chapLinks.length;
 
@@ -63,12 +65,13 @@ export function parseAnimePostList(
       if (idx >= 2) return;
       const chTitle = $(a).text().trim();
       const chSlug = extractSlugFromUrl($(a).attr('href') || '');
-      const dateText = $(a).next('.datech, span').text().trim() || (idx === 0 ? timeRaw : '1 minggu lalu');
+      const rawDateText = $(a).next('.datech, span').text().trim();
+      const dateText = sanitizeRelativeTime(rawDateText) || (idx === 0 ? timeRaw : '7 hari yang lalu');
       if (chSlug && chTitle) {
         recentChapters.push({
           title: chTitle.startsWith('Ch.') || chTitle.startsWith('Chapter') ? chTitle : `Ch. ${chTitle}`,
           slug: chSlug,
-          releaseTime: dateText || (idx === 0 ? '6 jam lalu' : '1 minggu lalu'),
+          releaseTime: dateText || (idx === 0 ? 'Baru saja' : '7 hari yang lalu'),
         });
       }
     });
@@ -83,7 +86,7 @@ export function parseAnimePostList(
         recentChapters.push({
           title: `Ch. ${prevNum}`,
           slug: prevSlug,
-          releaseTime: '1 minggu lalu',
+          releaseTime: '7 hari yang lalu',
         });
       }
     }
@@ -168,7 +171,7 @@ export function parseComicDetailHtml($: cheerio.CheerioAPI, slug: string): Comic
     const chapTitle =
       $el.find('.lchx a, a').first().text().trim() || `Chapter ${index + 1}`;
     const chapDate =
-      $el.find('.dt, .dt a').first().text().trim() || 'Baru saja';
+      sanitizeRelativeTime($el.find('.dt, .dt a').first().text().trim()) || 'Baru saja';
 
     const numMatch = chapTitle.match(/(?:chapter|ch\.?)\s*(\d+(?:\.\d+)?)/i);
     const chapterNumber = numMatch
@@ -193,7 +196,7 @@ export function parseComicDetailHtml($: cheerio.CheerioAPI, slug: string): Comic
     ? chapters.slice(0, 2).map((ch, idx) => ({
         title: ch.title.startsWith('Ch.') || ch.title.startsWith('Chapter') ? ch.title : `Ch. ${ch.title}`,
         slug: ch.slug,
-        releaseTime: ch.releaseDate || (idx === 0 ? 'Baru saja' : '1 minggu lalu'),
+        releaseTime: sanitizeRelativeTime(ch.releaseDate) || (idx === 0 ? 'Baru saja' : '7 hari yang lalu'),
       }))
     : undefined;
 

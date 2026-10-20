@@ -18,7 +18,7 @@ export const mockOngoingAnime: AnimeListItem[] = [
       {
         title: 'Eps. 11',
         slug: 'sl-s2-episode-11-sub-indo',
-        releaseTime: '1 minggu lalu',
+        releaseTime: '7 hari yang lalu',
       },
     ],
   },
@@ -39,7 +39,7 @@ export const mockOngoingAnime: AnimeListItem[] = [
       {
         title: 'Eps. 11',
         slug: 'dandadan-episode-11-sub-indo',
-        releaseTime: '1 minggu lalu',
+        releaseTime: '7 hari yang lalu',
       },
     ],
   },
@@ -60,7 +60,7 @@ export const mockOngoingAnime: AnimeListItem[] = [
       {
         title: 'Eps. 12',
         slug: 'bleach-sennen-kessen-hen-episode-12-sub-indo',
-        releaseTime: '1 minggu lalu',
+        releaseTime: '7 hari yang lalu',
       },
     ],
   },
@@ -81,7 +81,7 @@ export const mockOngoingAnime: AnimeListItem[] = [
       {
         title: 'Eps. 13',
         slug: 'blue-lock-vs-u-20-japan-episode-13-sub-indo',
-        releaseTime: '1 minggu lalu',
+        releaseTime: '7 hari yang lalu',
       },
     ],
   },
@@ -102,7 +102,7 @@ export const mockOngoingAnime: AnimeListItem[] = [
       {
         title: 'Eps. 14',
         slug: 'shangri-la-frontier-season-2-episode-14-sub-indo',
-        releaseTime: '1 minggu lalu',
+        releaseTime: '7 hari yang lalu',
       },
     ],
   },
@@ -123,7 +123,7 @@ export const mockOngoingAnime: AnimeListItem[] = [
       {
         title: 'Eps. 7',
         slug: 're-zero-season-3-episode-7-sub-indo',
-        releaseTime: '1 minggu lalu',
+        releaseTime: '7 hari yang lalu',
       },
     ],
   },

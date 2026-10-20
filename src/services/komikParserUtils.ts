@@ -25,3 +25,11 @@ export function extractSlugFromUrl(url: string): string {
     .replace(/\/+$/, '')
     .trim();
 }
+
+export function sanitizeRelativeTime(timeStr?: string): string {
+  if (!timeStr) return '';
+  return timeStr
+    .replace(/(?:1\s*minggu(?:\s*yang)?\s*lalu|seminggu(?:\s*yang)?\s*lalu)/gi, '7 hari yang lalu')
+    .replace(/(\d+)\s*minggu(?:\s*yang)?\s*lalu/gi, (_, n) => `${parseInt(n, 10) * 7} hari yang lalu`)
+    .trim();
+}

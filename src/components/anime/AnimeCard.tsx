@@ -12,6 +12,33 @@ interface AnimeCardProps {
 export const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
   const [imgError, setImgError] = useState(false);
 
+  // Format konsisten 2 baris episode update
+  const episodesToDisplay = (() => {
+    if (anime.recentEpisodes && anime.recentEpisodes.length > 0) {
+      const list = [...anime.recentEpisodes.slice(0, 2)];
+      if (list.length === 1) {
+        list.push({
+          title: 'Eps. Sebelumnya',
+          slug: anime.slug,
+          releaseTime: '7 hari yang lalu',
+        });
+      }
+      return list;
+    }
+    return [
+      {
+        title: anime.latestEpisode || 'Eps. Terbaru',
+        slug: anime.slug,
+        releaseTime: anime.releaseDay || 'Baru saja',
+      },
+      {
+        title: 'Eps. Sebelumnya',
+        slug: anime.slug,
+        releaseTime: '7 hari yang lalu',
+      },
+    ];
+  })();
+
   return (
     <div className="group relative flex flex-col rounded-2xl bg-white dark:bg-[#121214] border border-zinc-200/90 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-600 p-2.5 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
       {/* Cover Image Container */}
@@ -91,15 +118,18 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
           </h3>
         </Link>
 
-        {anime.recentEpisodes && anime.recentEpisodes.length > 0 ? (
-          <div className="border-t border-zinc-100 dark:border-zinc-800/80 pt-2 mt-2 space-y-1">
-            {anime.recentEpisodes.slice(0, 2).map((ep, idx) => (
+        <div className="border-t border-zinc-100 dark:border-zinc-800/80 pt-2 mt-2 space-y-1">
+          {episodesToDisplay.map((ep, idx) => {
+            const isWatchLink = ep.slug && ep.slug.toLowerCase().includes('episode');
+            const href = isWatchLink ? `/anime/watch/${ep.slug}` : `/anime/${anime.slug}`;
+
+            return (
               <div
                 key={`${ep.slug}-${idx}`}
                 className="flex items-center justify-between text-[11px] gap-2"
               >
                 <Link
-                  href={`/anime/watch/${ep.slug}`}
+                  href={href}
                   onClick={(e) => e.stopPropagation()}
                   className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:underline transition-colors truncate"
                   title={ep.title}
@@ -111,16 +141,9 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
                   {ep.releaseTime}
                 </span>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 mt-2 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
-            <span className="text-zinc-700 dark:text-zinc-300 font-medium">Sub Indo</span>
-            {anime.releaseDay && (
-              <span className="text-zinc-400 dark:text-zinc-500 text-[10px]">{anime.releaseDay}</span>
-            )}
-          </div>
-        )}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

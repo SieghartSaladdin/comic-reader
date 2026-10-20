@@ -12,6 +12,14 @@ export function extractSlugFromUrl(url: string): string {
 
 export const cleanText = (text: string): string => text.replace(/\s+/g, ' ').trim();
 
+export function sanitizeRelativeTime(timeStr?: string): string {
+  if (!timeStr) return '';
+  return timeStr
+    .replace(/(?:1\s*minggu(?:\s*yang)?\s*lalu|seminggu(?:\s*yang)?\s*lalu)/gi, '7 hari yang lalu')
+    .replace(/(\d+)\s*minggu(?:\s*yang)?\s*lalu/gi, (_, n) => `${parseInt(n, 10) * 7} hari yang lalu`)
+    .trim();
+}
+
 export function parseOngoingAnimeList($: cheerio.CheerioAPI): AnimeListItem[] {
   const list: AnimeListItem[] = [];
 
@@ -26,7 +34,8 @@ export function parseOngoingAnimeList($: cheerio.CheerioAPI): AnimeListItem[] {
       '';
     const cover = coverRaw.trim() ? coverRaw.trim() : '/placeholder-anime.svg';
     const ep = cleanText($el.find('.epz').text());
-    const day = cleanText($el.find('.epztipe').text());
+    const dayRaw = cleanText($el.find('.epztipe').text());
+    const day = sanitizeRelativeTime(dayRaw);
 
     if (title && slug) {
       let recentEpisodes:
@@ -55,10 +64,26 @@ export function parseOngoingAnimeList($: cheerio.CheerioAPI): AnimeListItem[] {
             {
               title: `Eps. ${prevNum}`,
               slug: `${baseSlug}-episode-${prevNum}-sub-indo`,
-              releaseTime: '1 minggu lalu',
+              releaseTime: '7 hari yang lalu',
             },
           ];
         }
+      }
+
+      // Pastikan fallback 2-baris jika nomor episode tidak ter-parse
+      if (!recentEpisodes) {
+        recentEpisodes = [
+          {
+            title: ep || 'Eps. Terbaru',
+            slug,
+            releaseTime: day || 'Baru saja',
+          },
+          {
+            title: 'Eps. Sebelumnya',
+            slug,
+            releaseTime: '7 hari yang lalu',
+          },
+        ];
       }
 
       list.push({
@@ -152,7 +177,7 @@ export function parseAnimeDetailHtml(
     const epUrl = a.attr('href') || '';
     const epSlug = extractSlugFromUrl(epUrl);
     const epTitle = cleanText(a.text());
-    const date = cleanText($el.find('.zeebr, .episodedate').text());
+    const date = sanitizeRelativeTime(cleanText($el.find('.zeebr, .episodedate').text()));
 
     if (epSlug && epTitle) {
       const numMatch = epTitle.match(/Episode\s*(\d+)/i);

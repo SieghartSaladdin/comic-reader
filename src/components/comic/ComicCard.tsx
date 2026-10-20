@@ -63,46 +63,71 @@ export const ComicCard: React.FC<ComicCardProps> = ({ comic }) => {
 
   // Format 2 baris chapter terbaru lengkap dengan waktu rilis
   const chaptersToDisplay = (() => {
-    if (comic.recentChapters && comic.recentChapters.length > 0) {
-      return comic.recentChapters.slice(0, 2);
-    }
-    const latestTitle =
-      comic.latestChapter ||
-      (fullComic.chapters && fullComic.chapters.length > 0
-        ? fullComic.chapters[0].title
-        : null);
-    const latestSlug =
-      comic.latestChapterSlug ||
-      (fullComic.chapters && fullComic.chapters.length > 0
-        ? fullComic.chapters[0].slug
-        : null);
+    const list: { title: string; slug: string; releaseTime: string }[] = [];
 
-    if (latestTitle && latestSlug && latestTitle !== 'Ch. -') {
-      const match = latestTitle.match(/(?:chapter|ch\.?)\s*(\d+(?:\.\d+)?)/i);
-      const title = match
-        ? `Ch. ${match[1]}`
-        : latestTitle.startsWith('Ch.') || latestTitle.startsWith('Chapter')
-        ? latestTitle.replace(/^Chapter\s*/i, 'Ch. ')
-        : `Ch. ${latestTitle}`;
-      const list = [
-        {
+    if (comic.recentChapters && comic.recentChapters.length > 0) {
+      list.push(...comic.recentChapters.slice(0, 2));
+    } else {
+      const latestTitle =
+        comic.latestChapter ||
+        (fullComic.chapters && fullComic.chapters.length > 0
+          ? fullComic.chapters[0].title
+          : null);
+      const latestSlug =
+        comic.latestChapterSlug ||
+        (fullComic.chapters && fullComic.chapters.length > 0
+          ? fullComic.chapters[0].slug
+          : null);
+
+      if (latestTitle && latestSlug && latestTitle !== 'Ch. -') {
+        const match = latestTitle.match(/(?:chapter|ch\.?)\s*(\d+(?:\.\d+)?)/i);
+        const title = match
+          ? `Ch. ${match[1]}`
+          : latestTitle.startsWith('Ch.') || latestTitle.startsWith('Chapter')
+          ? latestTitle.replace(/^Chapter\s*/i, 'Ch. ')
+          : `Ch. ${latestTitle}`;
+        list.push({
           title,
           slug: latestSlug,
           releaseTime: comic.updatedTime || 'Baru saja',
-        },
-      ];
-      if (match) {
-        const prevNum = Math.max(1, Math.floor(parseFloat(match[1]) - 1));
-        const prevSlug = latestSlug.replace(/(?:chapter|ch)-?\d+/i, `chapter-${prevNum}`);
-        list.push({
-          title: `Ch. ${prevNum}`,
-          slug: prevSlug,
-          releaseTime: '1 minggu lalu',
         });
+        if (match) {
+          const prevNum = Math.max(1, Math.floor(parseFloat(match[1]) - 1));
+          const prevSlug = latestSlug.replace(/(?:chapter|ch)-?\d+/i, `chapter-${prevNum}`);
+          list.push({
+            title: `Ch. ${prevNum}`,
+            slug: prevSlug,
+            releaseTime: '7 hari yang lalu',
+          });
+        }
       }
-      return list;
     }
-    return [];
+
+    // Pastikan konsisten selalu memiliki 2 baris
+    if (list.length === 0) {
+      list.push(
+        {
+          title: 'Ch. Terbaru',
+          slug: '',
+          releaseTime: comic.updatedTime || 'Baru saja',
+        },
+        {
+          title: 'Ch. Sebelumnya',
+          slug: '',
+          releaseTime: '7 hari yang lalu',
+        }
+      );
+    } else if (list.length === 1) {
+      const match = list[0].title.match(/(?:chapter|ch\.?)\s*(\d+(?:\.\d+)?)/i);
+      const prevNum = match ? Math.max(1, Math.floor(parseFloat(match[1]) - 1)) : null;
+      list.push({
+        title: prevNum !== null ? `Ch. ${prevNum}` : 'Ch. Sebelumnya',
+        slug: list[0].slug ? list[0].slug.replace(/(?:chapter|ch)-?\d+/i, `chapter-${prevNum || 1}`) : '',
+        releaseTime: '7 hari yang lalu',
+      });
+    }
+
+    return list.slice(0, 2);
   })();
 
   return (
@@ -190,43 +215,26 @@ export const ComicCard: React.FC<ComicCardProps> = ({ comic }) => {
         </div>
 
         {/* Chapter and Update Time Footer */}
-        {chaptersToDisplay.length > 0 ? (
-          <div className="border-t border-zinc-100 dark:border-zinc-800/80 pt-2 mt-2 space-y-1">
-            {chaptersToDisplay.map((ch, idx) => (
-              <div
-                key={`${ch.slug}-${idx}`}
-                className="flex items-center justify-between text-[11px] gap-2"
-              >
-                <Link
-                  href={`/reader/${comicKey}/${ch.slug}`}
-                  onClick={(e) => e.stopPropagation()}
-                  className="text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:underline transition-colors truncate"
-                  title={ch.title}
-                >
-                  {ch.title}
-                </Link>
-                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 shrink-0 font-normal">
-                  {ch.releaseTime}
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="border-t border-zinc-100 dark:border-zinc-800/80 pt-2 mt-2 flex items-center justify-between text-[11px]">
-            <span className="flex items-center gap-1 font-medium text-zinc-700 dark:text-zinc-300">
-              <Star className="w-3 h-3 fill-zinc-900 dark:fill-zinc-100 text-zinc-900 dark:text-zinc-100" />
-              <span>{(comic.rating || 8.0).toFixed(1)}</span>
-              <span className="text-zinc-300 dark:text-zinc-600">•</span>
-              <span>{comic.status || 'Ongoing'}</span>
-            </span>
-            <Link
-              href={`/comic/${comicKey}`}
-              className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white hover:underline transition-colors"
+        <div className="border-t border-zinc-100 dark:border-zinc-800/80 pt-2 mt-2 space-y-1">
+          {chaptersToDisplay.map((ch, idx) => (
+            <div
+              key={`${ch.slug}-${idx}`}
+              className="flex items-center justify-between text-[11px] gap-2"
             >
-              Lihat Detail →
-            </Link>
-          </div>
-        )}
+              <Link
+                href={ch.slug ? `/reader/${comicKey}/${ch.slug}` : `/comic/${comicKey}`}
+                onClick={(e) => e.stopPropagation()}
+                className="text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white hover:underline transition-colors truncate"
+                title={ch.title}
+              >
+                {ch.title}
+              </Link>
+              <span className="text-[10px] text-zinc-500 dark:text-zinc-400 shrink-0 font-normal">
+                {ch.releaseTime}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
