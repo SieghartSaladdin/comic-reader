@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
 import {
   BookOpen,
   ChevronLeft,
@@ -11,8 +12,12 @@ import {
 } from 'lucide-react';
 import { READER_BAR_ATTR } from '@/hooks/useHideOnUserScroll';
 import { ReaderReadingMode } from '@/types/comic';
-import { ChapterListSheet } from './ChapterListSheet';
 import { ChapterNavItem, descriptiveChapterTitle } from './ReaderControls';
+
+// Daftar chapter hanya dimuat saat pertama dibuka.
+const ChapterListSheet = dynamic(() =>
+  import('./ChapterListSheet').then((mod) => mod.ChapterListSheet)
+);
 
 interface ReaderBottomBarProps {
   isVisible: boolean;
@@ -151,13 +156,15 @@ export const ReaderBottomBar: React.FC<ReaderBottomBarProps> = ({
         </div>
       </footer>
 
-      <ChapterListSheet
-        isOpen={isListOpen}
-        onClose={() => setIsListOpen(false)}
-        chapters={chapters}
-        currentChapterId={currentChapterId}
-        onSelectChapter={onSelectChapter}
-      />
+      {isListOpen && (
+        <ChapterListSheet
+          isOpen={isListOpen}
+          onClose={() => setIsListOpen(false)}
+          chapters={chapters}
+          currentChapterId={currentChapterId}
+          onSelectChapter={onSelectChapter}
+        />
+      )}
     </>
   );
 };

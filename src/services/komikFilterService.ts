@@ -1,18 +1,9 @@
 import * as cheerio from 'cheerio';
+import { cacheLife, cacheTag } from 'next/cache';
 import { ComicListItem } from '@/types/comic';
 import { parseAnimePostList } from './komikParser';
 import { enrichRecentChapters } from './komikEnrichService';
-
-const BASE_URL = 'https://komikindo.ch';
-const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-
-const FETCH_HEADERS = {
-  'User-Agent': USER_AGENT,
-  Accept:
-    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-  'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-};
+import { KOMIK_BASE_URL as BASE_URL, fetchKomikHtml } from './komikSource';
 
 export interface FilterComicParams {
   page?: number;
@@ -115,69 +106,65 @@ export function buildFilterUrl(params: FilterComicParams): string {
 export async function getFilteredComics(
   params: FilterComicParams
 ): Promise<FilterComicResult> {
+  'use cache';
+  cacheTag('komik-feed', 'komik-catalog');
+
   const page = Math.max(1, params.page || 1);
-  const targetUrl = buildFilterUrl(params);
+  const { html } = await fetchKomikHtml(buildFilterUrl(params));
 
-  try {
-    const res = await fetch(targetUrl, {
-      headers: FETCH_HEADERS,
-      next: { revalidate: 300 },
-    });
+  if (!html) {
+    // Gagal/kosong: jangan disimpan lama agar percobaan berikutnya langsung mengambil ulang.
+    cacheLife('seconds');
+    return { comics: [], page, hasNextPage: false, totalEstimatedPages: page };
+  }
 
-    if (!res.ok) {
-      return { comics: [], page, hasNextPage: false, totalEstimatedPages: page };
-    }
+  const $ = cheerio.load(html);
+  let comics = parseAnimePostList($);
 
-    const html = await res.text();
-    const $ = cheerio.load(html);
-    let comics = parseAnimePostList($);
+  // Local refinement for type if Komikindo didn't filter strictly
+  const reqType = params.type?.toLowerCase();
+  if (reqType && reqType !== 'all') {
+    comics = comics.filter((c) => c.type.toLowerCase() === reqType);
+  }
 
-    // Local refinement for type if Komikindo didn't filter strictly
-    const reqType = params.type?.toLowerCase();
-    if (reqType && reqType !== 'all') {
-      comics = comics.filter((c) => c.type.toLowerCase() === reqType);
-    }
+  // Local refinement for rating sort
+  if (params.sort === 'rating') {
+    comics = [...comics].sort((a, b) => b.rating - a.rating);
+  }
 
-    // Local refinement for rating sort
-    if (params.sort === 'rating') {
-      comics = [...comics].sort((a, b) => b.rating - a.rating);
-    }
+  if (params.limit && params.limit > 0) {
+    comics = comics.slice(0, params.limit);
+  }
 
-    if (params.limit && params.limit > 0) {
-      comics = comics.slice(0, params.limit);
-    }
+  comics = await enrichRecentChapters(comics);
 
-    comics = await enrichRecentChapters(comics);
+  const hasNextPage =
+    $('.pagination .next, .page-numbers.next, a.next, a[rel="next"]').length > 0;
 
-    const hasNextPage =
-      $('.pagination .next, .page-numbers.next, a.next, a[rel="next"]').length > 0;
-
-    let totalEstimatedPages = page;
-    $('.pagination .page-numbers, .page-numbers, .pagination a, .pagination span').each(
-      (_, el) => {
-        const txt = $(el).text().trim().replace(/,/g, '');
-        const num = parseInt(txt, 10);
-        if (!isNaN(num) && num > totalEstimatedPages) {
-          totalEstimatedPages = num;
-        }
-        const href = $(el).attr('href') || '';
-        const match = href.match(/\/page\/(\d+)\/?/);
-        if (match) {
-          const p = parseInt(match[1], 10);
-          if (!isNaN(p) && p > totalEstimatedPages) {
-            totalEstimatedPages = p;
-          }
+  let totalEstimatedPages = page;
+  $('.pagination .page-numbers, .page-numbers, .pagination a, .pagination span').each(
+    (_, el) => {
+      const txt = $(el).text().trim().replace(/,/g, '');
+      const num = parseInt(txt, 10);
+      if (!isNaN(num) && num > totalEstimatedPages) {
+        totalEstimatedPages = num;
+      }
+      const href = $(el).attr('href') || '';
+      const match = href.match(/\/page\/(\d+)\/?/);
+      if (match) {
+        const p = parseInt(match[1], 10);
+        if (!isNaN(p) && p > totalEstimatedPages) {
+          totalEstimatedPages = p;
         }
       }
-    );
-
-    if (hasNextPage && totalEstimatedPages <= page) {
-      totalEstimatedPages = page + 1;
     }
+  );
 
-    return { comics, page, hasNextPage, totalEstimatedPages };
-  } catch (error) {
-    console.error('getFilteredComics error:', error);
-    return { comics: [], page, hasNextPage: false, totalEstimatedPages: 1 };
+  if (hasNextPage && totalEstimatedPages <= page) {
+    totalEstimatedPages = page + 1;
   }
+
+  if (comics.length > 0) cacheLife('catalog');
+  else cacheLife('seconds');
+  return { comics, page, hasNextPage, totalEstimatedPages };
 }

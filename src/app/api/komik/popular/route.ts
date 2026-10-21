@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import { getPopularComics } from '@/services/komikService';
+import { cachedJson } from '@/utils/apiResponse';
 
 export async function GET() {
   try {
     const data = await getPopularComics();
-    return NextResponse.json({
-      success: true,
-      data,
-      count: data.length,
-    });
+    return cachedJson({ success: true, data, count: data.length }, 'feed');
   } catch (error) {
+    // Jangan telan sinyal internal Next.js (mis. bail-out prerender)
+    unstable_rethrow(error);
     console.error('API Error /api/komik/popular:', error);
     return NextResponse.json(
       {

@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { cacheLife, cacheTag } from 'next/cache';
 import { AnimeListItem, AnimeDetail, AnimeStreamData } from '@/types/anime';
 import {
   parseOngoingAnimeList,
@@ -7,151 +8,120 @@ import {
   parseEpisodeStreamHtml,
 } from './animeParser';
 import { enrichRecentEpisodes } from './animeEnrichService';
+import { fetchHtml, fetchHtmlResult } from './animeSource';
 import {
   mockOngoingAnime,
   mockAnimeDetailMap,
   mockDefaultStream,
 } from '@/data/mockAnime';
 
-const BASE_URL = 'https://otakudesu.blog';
-const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36';
-
-const FETCH_HEADERS = {
-  'User-Agent': USER_AGENT,
-  Accept:
-    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-  'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-};
+/**
+ * Setiap fungsi di sini memakai `use cache`: hasil parse disimpan di server, disajikan instan,
+ * dan diperbarui di latar setelah `revalidate`. Saat sumber gagal dan data mock dipakai sebagai
+ * cadangan, umur cache dibuat sangat pendek (`seconds`) agar data mock tidak menetap.
+ */
 
 /**
  * Mengambil daftar anime ongoing terbaru dari otakudesu.blog
  */
 export async function getOngoingAnime(): Promise<AnimeListItem[]> {
-  try {
-    const res = await fetch(`${BASE_URL}/ongoing-anime/`, {
-      headers: FETCH_HEADERS,
-      next: { revalidate: 600 },
-    });
+  'use cache';
+  cacheTag('anime-feed');
 
-    if (res.ok) {
-      const html = await res.text();
-      const $ = cheerio.load(html);
-      const list = parseOngoingAnimeList($);
-      if (list.length > 0) return await enrichRecentEpisodes(list);
+  // /ongoing-anime/ lebih dulu; halaman depan sebagai cadangan jika strukturnya berbeda.
+  for (const path of ['/ongoing-anime/', '/']) {
+    const html = await fetchHtml(path);
+    const list = html ? parseOngoingAnimeList(cheerio.load(html)) : [];
+    if (list.length > 0) {
+      const enriched = await enrichRecentEpisodes(list);
+      cacheLife('feed');
+      return enriched;
     }
-
-    // Fallback ke halaman depan jika /ongoing-anime/ berbeda
-    const homeRes = await fetch(BASE_URL, {
-      headers: FETCH_HEADERS,
-      next: { revalidate: 600 },
-    });
-    if (homeRes.ok) {
-      const html = await homeRes.text();
-      const $ = cheerio.load(html);
-      const list = parseOngoingAnimeList($);
-      if (list.length > 0) return await enrichRecentEpisodes(list);
-    }
-
-    return mockOngoingAnime;
-  } catch (error) {
-    console.error('getOngoingAnime error:', error);
-    return mockOngoingAnime;
   }
+
+  cacheLife('seconds');
+  return mockOngoingAnime;
 }
 
 /**
  * Mencari anime berdasarkan kata kunci
  */
 export async function searchAnime(query: string): Promise<AnimeListItem[]> {
-  if (!query || !query.trim()) return [];
+  'use cache';
 
-  try {
-    const encoded = encodeURIComponent(query.trim());
-    const res = await fetch(`${BASE_URL}/?s=${encoded}&post_type=anime`, {
-      headers: FETCH_HEADERS,
-      next: { revalidate: 300 },
-    });
-
-    if (res.ok) {
-      const html = await res.text();
-      const $ = cheerio.load(html);
-      const list = parseSearchAnimeList($);
-      if (list.length > 0) return await enrichRecentEpisodes(list);
-    }
-
-    // Filter dari mock jika live search kosong/gagal
-    const qLower = query.toLowerCase();
-    return mockOngoingAnime.filter(
-      (a) =>
-        a.title.toLowerCase().includes(qLower) ||
-        a.slug.toLowerCase().includes(qLower)
-    );
-  } catch (error) {
-    console.error('searchAnime error:', error);
+  const keyword = query?.trim();
+  if (!keyword) {
+    cacheLife('minutes');
     return [];
   }
+
+  const html = await fetchHtml(`/?s=${encodeURIComponent(keyword)}&post_type=anime`);
+  const list = html ? parseSearchAnimeList(cheerio.load(html)) : [];
+  if (list.length > 0) {
+    const enriched = await enrichRecentEpisodes(list);
+    cacheLife('search');
+    return enriched;
+  }
+
+  // Sumber kosong/gagal: saring dari data mock, tetapi jangan disimpan lama.
+  cacheLife('seconds');
+  const lower = keyword.toLowerCase();
+  return mockOngoingAnime.filter(
+    (a) => a.title.toLowerCase().includes(lower) || a.slug.toLowerCase().includes(lower)
+  );
 }
 
 /**
  * Mengambil detail lengkap anime beserta daftar episodenya
  */
 export async function getAnimeDetail(slug: string): Promise<AnimeDetail | null> {
-  if (!slug) return null;
+  'use cache';
+  cacheTag('anime-detail', `anime-detail:${slug}`);
 
-  try {
-    const targetUrl = slug.startsWith('http')
-      ? slug
-      : `${BASE_URL}/anime/${slug}/`;
-
-    const res = await fetch(targetUrl, {
-      headers: FETCH_HEADERS,
-      next: { revalidate: 1800 },
-    });
-
-    if (res.ok) {
-      const html = await res.text();
-      const $ = cheerio.load(html);
-      const detail = parseAnimeDetailHtml($, slug);
-      if (detail && detail.title) return detail;
-    }
-
-    if (mockAnimeDetailMap[slug]) {
-      return mockAnimeDetailMap[slug];
-    }
-
-    // Generic fallback detail jika slug tidak cocok
-    const mockItem = mockOngoingAnime.find((m) => m.slug === slug);
-    if (mockItem) {
-      return {
-        slug: mockItem.slug,
-        title: mockItem.title,
-        altTitle: mockItem.title,
-        coverImage: mockItem.coverImage,
-        score: mockItem.rating || '8.5',
-        status: 'Ongoing',
-        totalEpisodes: '12',
-        duration: '24 min',
-        releaseDate: '2026',
-        studio: 'Production',
-        genres: ['Action', 'Adventure', 'Animation'],
-        synopsis: `${mockItem.title} menceritakan petualangan seru penuh aksi yang siap menemani waktu luang Anda.`,
-        episodes: [
-          {
-            slug: `${mockItem.slug}-episode-1`,
-            title: `${mockItem.title} Episode 1 Subtitle Indonesia`,
-            episodeNumber: 1,
-            releaseDate: 'Terbaru',
-          },
-        ],
-      };
-    }
-
+  if (!slug) {
+    cacheLife('minutes');
     return null;
-  } catch (error) {
-    console.error('getAnimeDetail error:', error);
-    return mockAnimeDetailMap[slug] || null;
   }
+
+  const { html } = await fetchHtmlResult(slug.startsWith('http') ? slug : `/anime/${slug}/`);
+  const detail = html ? parseAnimeDetailHtml(cheerio.load(html), slug) : null;
+  if (detail && detail.title) {
+    cacheLife('detail');
+    return detail;
+  }
+
+  // Cadangan dari data mock (sumber gagal/tidak ditemukan): umur cache pendek.
+  cacheLife('seconds');
+
+  if (mockAnimeDetailMap[slug]) return mockAnimeDetailMap[slug];
+
+  const mockItem = mockOngoingAnime.find((m) => m.slug === slug);
+  if (mockItem) {
+    return {
+      slug: mockItem.slug,
+      title: mockItem.title,
+      altTitle: mockItem.title,
+      coverImage: mockItem.coverImage,
+      score: mockItem.rating || '8.5',
+      status: 'Ongoing',
+      totalEpisodes: '12',
+      duration: '24 min',
+      releaseDate: '2026',
+      studio: 'Production',
+      genres: ['Action', 'Adventure', 'Animation'],
+      synopsis: `${mockItem.title} menceritakan petualangan seru penuh aksi yang siap menemani waktu luang Anda.`,
+      episodes: [
+        {
+          slug: `${mockItem.slug}-episode-1`,
+          title: `${mockItem.title} Episode 1 Subtitle Indonesia`,
+          episodeNumber: 1,
+          releaseDate: 'Terbaru',
+        },
+      ],
+    };
+  }
+
+  return null;
 }
 
 /**
@@ -160,38 +130,34 @@ export async function getAnimeDetail(slug: string): Promise<AnimeDetail | null> 
 export async function getEpisodeStream(
   episodeSlug: string
 ): Promise<AnimeStreamData | null> {
-  if (!episodeSlug) return null;
+  'use cache';
+  cacheTag('anime-episode', `anime-episode:${episodeSlug}`);
 
-  try {
-    const targetUrl = episodeSlug.startsWith('http')
-      ? episodeSlug
-      : `${BASE_URL}/episode/${episodeSlug}/`;
-
-    const res = await fetch(targetUrl, {
-      headers: FETCH_HEADERS,
-      next: { revalidate: 3600 },
-    });
-
-    if (res.ok) {
-      const html = await res.text();
-      const $ = cheerio.load(html);
-      const streamData = parseEpisodeStreamHtml($, episodeSlug);
-      if (streamData && streamData.streamUrl) return streamData;
-    }
-
-    const fallbackTitle = episodeSlug
-      .replace(/-/g, ' ')
-      .replace(/\b\w/g, (c) => c.toUpperCase());
-
-    return {
-      ...mockDefaultStream,
-      episodeTitle: fallbackTitle,
-      iframeUrl:
-        mockDefaultStream.iframeUrl ||
-        `/api/anime/stream-proxy?url=${encodeURIComponent(mockDefaultStream.streamUrl)}`,
-    };
-  } catch (error) {
-    console.error('getEpisodeStream error:', error);
-    return mockDefaultStream;
+  if (!episodeSlug) {
+    cacheLife('minutes');
+    return null;
   }
+
+  const { html } = await fetchHtmlResult(
+    episodeSlug.startsWith('http') ? episodeSlug : `/episode/${episodeSlug}/`
+  );
+  const streamData = html ? parseEpisodeStreamHtml(cheerio.load(html), episodeSlug) : null;
+  if (streamData && streamData.streamUrl) {
+    cacheLife('chapter');
+    return streamData;
+  }
+
+  // Cadangan (sumber gagal): umur cache pendek.
+  cacheLife('seconds');
+  const fallbackTitle = episodeSlug
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  return {
+    ...mockDefaultStream,
+    episodeTitle: fallbackTitle,
+    iframeUrl:
+      mockDefaultStream.iframeUrl ||
+      `/api/anime/stream-proxy?url=${encodeURIComponent(mockDefaultStream.streamUrl)}`,
+  };
 }

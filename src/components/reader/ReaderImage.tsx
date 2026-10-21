@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { RefreshCw, ImageOff, Loader2 } from 'lucide-react';
 import { ComicPage, ReaderZoomMode } from '@/types/comic';
 
@@ -10,6 +10,8 @@ interface ReaderImageProps {
   alt?: string;
   onClick?: () => void;
   className?: string;
+  /** Halaman awal chapter: dimuat segera dengan prioritas tinggi (bukan lazy). */
+  priority?: boolean;
 }
 
 export const ReaderImage: React.FC<ReaderImageProps> = ({
@@ -18,10 +20,24 @@ export const ReaderImage: React.FC<ReaderImageProps> = ({
   alt,
   onClick,
   className = '',
+  priority = false,
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasError, setHasError] = useState<boolean>(false);
   const [retryCount, setRetryCount] = useState<number>(0);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  // HTML reader dirender di server, jadi gambar bisa selesai dimuat SEBELUM hydration dan event
+  // `onLoad` terlewat. Periksa status gambar saat mount agar tidak tertahan transparan.
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img || !img.complete) return;
+    if (img.naturalWidth > 0) setIsLoading(false);
+    else {
+      setIsLoading(false);
+      setHasError(true);
+    }
+  }, []);
 
   const handleRetry = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -80,9 +96,13 @@ export const ReaderImage: React.FC<ReaderImageProps> = ({
         /* Image Element */
         // eslint-disable-next-line @next/next/no-img-element
         <img
+          ref={imgRef}
           src={imageSrc}
           alt={alt || `Halaman ${page.pageNumber}`}
-          loading="lazy"
+          // Halaman awal dimuat segera dan diprioritaskan; sisanya menunggu mendekati layar.
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : 'auto'}
+          decoding="async"
           onLoad={() => setIsLoading(false)}
           onError={() => {
             setIsLoading(false);

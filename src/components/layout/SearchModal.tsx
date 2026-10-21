@@ -4,6 +4,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Search, X, Loader2, Star, BookOpen } from 'lucide-react';
 import { ComicListItem } from '@/types/comic';
+import { cachedFetchJson } from '@/utils/clientCache';
+
+const SEARCH_TTL_MS = 5 * 60 * 1000;
+
+interface SearchResponse {
+  success: boolean;
+  data?: ComicListItem[];
+}
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -50,26 +58,27 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
     }
 
     setIsLoading(true);
+    let cancelled = false;
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/komik/search?q=${encodeURIComponent(trimmed)}`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success && Array.isArray(json.data)) {
-            setResults(json.data);
-          } else {
-            setResults([]);
-          }
-        }
+        // Cache klien: kata kunci yang pernah dicari tampil instan tanpa permintaan ulang.
+        const json = await cachedFetchJson<SearchResponse>(
+          `/api/komik/search?q=${encodeURIComponent(trimmed)}`,
+          SEARCH_TTL_MS
+        );
+        if (!cancelled) setResults(json.success && Array.isArray(json.data) ? json.data : []);
       } catch (err) {
         console.error('Search error:', err);
-        setResults([]);
+        if (!cancelled) setResults([]);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     }, 350);
 
-    return () => clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [query]);
 
   if (!isOpen) return null;

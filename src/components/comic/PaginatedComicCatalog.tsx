@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { BookOpen, AlertCircle, RefreshCw } from 'lucide-react';
 import { ComicListItem } from '@/types/comic';
 import { ComicCard } from './ComicCard';
@@ -11,6 +11,21 @@ import {
   ComicFilterSort,
 } from './ComicFilterBar';
 import { Pagination } from '../common/Pagination';
+import { cachedFetchJson, prefetchJson } from '@/utils/clientCache';
+
+const CATALOG_TTL_MS = 5 * 60 * 1000;
+const PREFETCH_DELAY_MS = 1000;
+
+interface FilterResponse {
+  success: boolean;
+  error?: string;
+  data?: {
+    comics?: ComicListItem[];
+    page?: number;
+    totalEstimatedPages?: number;
+    hasNextPage?: boolean;
+  };
+}
 
 interface PaginatedComicCatalogProps {
   initialComics?: ComicListItem[];
@@ -42,6 +57,16 @@ export const PaginatedComicCatalog: React.FC<PaginatedComicCatalogProps> = ({
 
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Halaman pertama sudah dikirim server; siapkan halaman kedua di latar sebelum pengguna menekannya.
+  useEffect(() => {
+    if (!initialHasNextPage) return;
+    const timer = window.setTimeout(
+      () => prefetchJson(`/api/komik/filter?page=${initialPage + 1}`, CATALOG_TTL_MS),
+      PREFETCH_DELAY_MS
+    );
+    return () => window.clearTimeout(timer);
+  }, [initialHasNextPage, initialPage]);
+
   const scrollToCatalog = () => {
     if (containerRef.current) {
       const topOffset =
@@ -62,23 +87,27 @@ export const PaginatedComicCatalog: React.FC<PaginatedComicCatalogProps> = ({
       setError(null);
 
       try {
-        const queryParams = new URLSearchParams();
-        queryParams.set('page', targetPage.toString());
-        if (targetType !== 'all') queryParams.set('type', targetType);
-        if (targetGenres.length > 0)
-          queryParams.set('genres', targetGenres.join(','));
-        if (targetStatus !== 'all') queryParams.set('status', targetStatus);
-        if (targetSort !== 'latest') queryParams.set('sort', targetSort);
+        const buildUrl = (pageNumber: number) => {
+          const queryParams = new URLSearchParams();
+          queryParams.set('page', pageNumber.toString());
+          if (targetType !== 'all') queryParams.set('type', targetType);
+          if (targetGenres.length > 0)
+            queryParams.set('genres', targetGenres.join(','));
+          if (targetStatus !== 'all') queryParams.set('status', targetStatus);
+          if (targetSort !== 'latest') queryParams.set('sort', targetSort);
+          return `/api/komik/filter?${queryParams.toString()}`;
+        };
 
-        const res = await fetch(`/api/komik/filter?${queryParams.toString()}`);
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-        const json = await res.json();
+        // Cache klien: halaman/filter yang pernah dibuka tampil instan tanpa permintaan ulang.
+        const json = await cachedFetchJson<FilterResponse>(buildUrl(targetPage), CATALOG_TTL_MS);
         if (json.success && json.data) {
           setComics(json.data.comics || []);
           setPage(json.data.page || targetPage);
           setTotalPages(json.data.totalEstimatedPages || 1);
           setHasNextPage(Boolean(json.data.hasNextPage));
+
+          // Siapkan halaman berikutnya selagi pengguna melihat halaman ini.
+          if (json.data.hasNextPage) prefetchJson(buildUrl(targetPage + 1), CATALOG_TTL_MS);
         } else {
           throw new Error(json.error || 'Gagal memuat komik');
         }

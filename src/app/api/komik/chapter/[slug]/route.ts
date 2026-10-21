@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import { getChapterDetail } from '@/services/komikService';
+import { cachedJson } from '@/utils/apiResponse';
 
 export async function GET(
   _request: NextRequest,
@@ -22,19 +24,24 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: chapterDetail.pages,
-      chapter: {
-        slug: chapterDetail.slug,
-        title: chapterDetail.title,
-        comicSlug: chapterDetail.comicSlug,
-        prevChapterSlug: chapterDetail.prevChapterSlug,
-        nextChapterSlug: chapterDetail.nextChapterSlug,
-        pages: chapterDetail.pages,
+    return cachedJson(
+      {
+        success: true,
+        data: chapterDetail.pages,
+        chapter: {
+          slug: chapterDetail.slug,
+          title: chapterDetail.title,
+          comicSlug: chapterDetail.comicSlug,
+          prevChapterSlug: chapterDetail.prevChapterSlug,
+          nextChapterSlug: chapterDetail.nextChapterSlug,
+          pages: chapterDetail.pages,
+        },
       },
-    });
+      'chapter'
+    );
   } catch (error) {
+    // Jangan telan sinyal internal Next.js (mis. bail-out prerender)
+    unstable_rethrow(error);
     console.error('API Error /api/komik/chapter/[slug]:', error);
     return NextResponse.json(
       { success: false, error: 'Gagal memuat chapter komik' },

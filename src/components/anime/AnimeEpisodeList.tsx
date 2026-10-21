@@ -4,6 +4,14 @@ import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { AnimeEpisodeItem } from '@/types/anime';
 import { Play, Search, ArrowUpDown, Calendar } from 'lucide-react';
+import { prefetchJson } from '@/utils/clientCache';
+
+const WARM_TTL_MS = 10 * 60 * 1000;
+
+/** Minta server menyiapkan (dan men-cache) data stream episode lebih awal. */
+function warmEpisode(slug: string): void {
+  prefetchJson(`/api/anime/episode/${encodeURIComponent(slug)}`, WARM_TTL_MS);
+}
 
 interface AnimeEpisodeListProps {
   episodes: AnimeEpisodeItem[];
@@ -82,6 +90,10 @@ export const AnimeEpisodeList: React.FC<AnimeEpisodeListProps> = ({
             <Link
               key={ep.slug}
               href={`/anime/watch/${ep.slug}`}
+              // Panaskan data stream episode begitu kursor/jari mendekat, sebelum diklik.
+              onPointerEnter={() => warmEpisode(ep.slug)}
+              onTouchStart={() => warmEpisode(ep.slug)}
+              onFocus={() => warmEpisode(ep.slug)}
               className="group flex items-center justify-between p-3 rounded-xl bg-white dark:bg-[#121214] hover:bg-zinc-50 dark:hover:bg-[#18181b] border border-zinc-200 dark:border-zinc-800/80 hover:border-zinc-400 dark:hover:border-zinc-700 transition-all duration-200"
             >
               <div className="flex items-center gap-3 overflow-hidden">

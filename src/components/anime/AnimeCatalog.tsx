@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AlertCircle, Film, RefreshCw } from 'lucide-react';
 import { AnimeCatalogResult, AnimeCatalogStatus } from '@/types/anime';
+import { cachedFetchJson, prefetchJson } from '@/utils/clientCache';
 import { Pagination } from '../common/Pagination';
 import { AnimeCard } from './AnimeCard';
 import { AnimeCatalogFilters } from './AnimeCatalogFilters';
@@ -18,6 +19,21 @@ interface Filters {
 }
 
 const DEFAULT_FILTERS: Filters = { query: '', status: 'all', genre: '', page: 1 };
+const CATALOG_TTL_MS = 5 * 60 * 1000;
+const PREFETCH_DELAY_MS = 1000;
+
+interface CatalogResponse {
+  success: boolean;
+  data?: AnimeCatalogResult;
+  error?: string;
+}
+
+function catalogUrl(filters: Filters): string {
+  const params = new URLSearchParams({ page: String(filters.page), status: filters.status });
+  if (filters.genre) params.set('genre', filters.genre);
+  if (filters.query.trim()) params.set('q', filters.query.trim());
+  return `/api/anime/catalog?${params.toString()}`;
+}
 
 interface AnimeCatalogProps {
   initialResult: AnimeCatalogResult;
@@ -45,17 +61,17 @@ export const AnimeCatalog: React.FC<AnimeCatalogProps> = ({ initialResult }) => 
     setError(null);
 
     try {
-      const params = new URLSearchParams({ page: String(next.page), status: next.status });
-      if (next.genre) params.set('genre', next.genre);
-      if (next.query.trim()) params.set('q', next.query.trim());
-
-      const res = await fetch(`/api/anime/catalog?${params.toString()}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
+      // Cache klien: halaman/filter yang pernah dibuka tampil instan tanpa permintaan ulang.
+      const json = await cachedFetchJson<CatalogResponse>(catalogUrl(next), CATALOG_TTL_MS);
       if (!json.success || !json.data) throw new Error(json.error || 'Gagal memuat anime');
 
       // Abaikan respons lama jika sudah ada permintaan yang lebih baru.
       if (requestId === latestRequest.current) setResult(json.data);
+
+      // Siapkan halaman berikutnya selagi pengguna melihat halaman ini.
+      if (json.data.hasNextPage && !next.query.trim()) {
+        prefetchJson(catalogUrl({ ...next, page: next.page + 1 }), CATALOG_TTL_MS);
+      }
     } catch (err) {
       console.error('Error fetching anime catalog:', err);
       if (requestId === latestRequest.current) {
@@ -72,6 +88,16 @@ export const AnimeCatalog: React.FC<AnimeCatalogProps> = ({ initialResult }) => 
     if (scroll) scrollToCatalog();
     load(next);
   };
+
+  // Halaman pertama sudah dikirim server; siapkan halaman kedua di latar sebelum pengguna menekannya.
+  useEffect(() => {
+    if (!initialResult.hasNextPage) return;
+    const timer = window.setTimeout(
+      () => prefetchJson(catalogUrl({ ...DEFAULT_FILTERS, page: initialResult.page + 1 }), CATALOG_TTL_MS),
+      PREFETCH_DELAY_MS
+    );
+    return () => window.clearTimeout(timer);
+  }, [initialResult.hasNextPage, initialResult.page]);
 
   // Pencarian ditunda sampai pengguna berhenti mengetik.
   useEffect(() => {

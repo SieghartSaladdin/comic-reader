@@ -68,6 +68,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ comics }) => {
           <img
             src={displayBanner}
             alt={current.title}
+            fetchPriority="high"
+            decoding="async"
             onError={() => setBgError(true)}
             className="w-full h-full object-cover object-center filter blur-[2px] scale-105 opacity-25 dark:opacity-30 dark:brightness-50 transition-all duration-700"
           />
@@ -149,6 +151,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ comics }) => {
             <img
               src={current.coverImage}
               alt={current.title}
+              fetchPriority="high"
+              decoding="async"
               onError={() => setCoverError(true)}
               className="w-full h-full object-cover"
             />

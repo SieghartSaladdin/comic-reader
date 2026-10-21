@@ -152,7 +152,9 @@ export function parseAnimeDetailHtml(
     const epTitle = cleanText(a.text());
     const date = sanitizeRelativeTime(cleanText($el.find('.zeebr, .episodedate').text()));
 
-    if (epSlug && epTitle) {
+    // Entri "[BATCH]" / "Episode 001-025" bertautan URL absolut (/batch/, /lengkap/), bukan episode
+    // yang bisa ditonton di aplikasi ini; lewati agar tidak jadi tautan rusak.
+    if (epSlug && epTitle && !epSlug.startsWith('http')) {
       const numMatch = epTitle.match(/Episode\s*(\d+)/i);
       const epNum = numMatch ? parseInt(numMatch[1], 10) : i + 1;
       episodes.push({

@@ -1,9 +1,18 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowUpDown, Search, Calendar, Users, BookOpen } from 'lucide-react';
 import { Chapter } from '@/types/comic';
+import { prefetchJson } from '@/utils/clientCache';
+
+const WARM_NEWEST_DELAY_MS = 800;
+const WARM_TTL_MS = 10 * 60 * 1000;
+
+/** Minta server menyiapkan (dan men-cache) data chapter lebih awal. */
+function warmChapter(slug: string): void {
+  prefetchJson(`/api/komik/chapter/${encodeURIComponent(slug)}`, WARM_TTL_MS);
+}
 
 interface ChapterListProps {
   comicId: string;
@@ -18,6 +27,14 @@ export const ChapterList: React.FC<ChapterListProps> = ({
 }) => {
   const [isAscending, setIsAscending] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Chapter terbaru paling sering dibuka: siapkan datanya sesaat setelah halaman tampil.
+  const newestSlug = chapters[0]?.slug || chapters[0]?.id;
+  useEffect(() => {
+    if (!newestSlug) return;
+    const timer = window.setTimeout(() => warmChapter(newestSlug), WARM_NEWEST_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [newestSlug]);
 
   // Filter and sort chapters
   const processedChapters = useMemo(() => {
@@ -126,6 +143,10 @@ export const ChapterList: React.FC<ChapterListProps> = ({
 
                 <Link
                   href={`/reader/${comicId}/${targetSlug}`}
+                  // Panaskan data chapter begitu kursor/jari mendekat, sebelum diklik.
+                  onPointerEnter={() => warmChapter(targetSlug)}
+                  onTouchStart={() => warmChapter(targetSlug)}
+                  onFocus={() => warmChapter(targetSlug)}
                   className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-zinc-900 hover:bg-black text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-xs font-semibold shadow-xs transition-all shrink-0 cursor-pointer"
                 >
                   <BookOpen className="w-3.5 h-3.5" />

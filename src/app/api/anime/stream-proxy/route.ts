@@ -1,6 +1,5 @@
-export const dynamic = 'force-dynamic';
-
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import { injectPlayerScript } from '@/utils/streamProxyScript';
 
 /**
@@ -96,6 +95,8 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
+    // Jangan telan sinyal internal Next.js (mis. bail-out prerender)
+    unstable_rethrow(error);
     console.error('Error in /api/anime/stream-proxy:', error);
     return new NextResponse(
       'Terjadi kesalahan saat memproses stream video. Silakan coba buka player eksternal.',

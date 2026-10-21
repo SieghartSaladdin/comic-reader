@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -14,12 +14,17 @@ import {
   Sun,
   Moon,
 } from 'lucide-react';
-import { SearchModal } from './SearchModal';
+import dynamic from 'next/dynamic';
+import { SearchModal as SearchModalType } from './SearchModal';
+
+const SearchModal = dynamic<React.ComponentProps<typeof SearchModalType>>(() =>
+  import('./SearchModal').then((mod) => mod.SearchModal)
+);
 import { getBookmarks } from '@/utils/storage';
 import { useTheme } from '@/components/theme/ThemeProvider';
 
-export const Navbar: React.FC = () => {
-  const pathname = usePathname();
+/** Isi navbar. `pathname` null berarti belum diketahui (saat prerender): tanpa penanda halaman aktif. */
+const NavbarContent: React.FC<{ pathname: string | null }> = ({ pathname }) => {
   const { theme, toggleTheme, mounted } = useTheme();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -187,8 +192,17 @@ export const Navbar: React.FC = () => {
         )}
       </header>
 
-      {/* Pop-up Search Modal */}
-      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      {/* Pop-up Search Modal: dimuat saat pertama dibuka */}
+      {isSearchOpen && <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />}
     </>
   );
 };
+
+/** Membaca pathname (data runtime) di dalam Suspense agar halaman tetap bisa diprerender. */
+const NavbarWithPathname: React.FC = () => <NavbarContent pathname={usePathname()} />;
+
+export const Navbar: React.FC = () => (
+  <Suspense fallback={<NavbarContent pathname={null} />}>
+    <NavbarWithPathname />
+  </Suspense>
+);

@@ -1,15 +1,34 @@
-export const dynamic = 'force-dynamic';
-
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ComicDetailContent } from '@/components/comic/ComicDetailContent';
 import { getComicDetail } from '@/services/komikService';
-import { ArrowLeft, BookX, Loader2 } from 'lucide-react';
+import { ArrowLeft, BookX } from 'lucide-react';
 
 interface ComicDetailPageProps {
   params: Promise<{ id: string }>;
+}
+
+/** Kerangka halaman detail: tampil seketika dari App Shell sementara data komik dimuat. */
+function ComicDetailSkeleton() {
+  return (
+    <div className="animate-pulse space-y-6" aria-busy="true" aria-label="Memuat detail komik">
+      <div className="flex flex-col gap-6 md:flex-row">
+        <div className="aspect-[3/4] w-full max-w-[240px] rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
+        <div className="flex-1 space-y-4">
+          <div className="h-8 w-2/3 rounded-lg bg-zinc-200 dark:bg-zinc-800" />
+          <div className="h-4 w-1/3 rounded bg-zinc-200 dark:bg-zinc-800" />
+          <div className="h-24 w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+        </div>
+      </div>
+      <div className="space-y-2">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="h-14 w-full rounded-xl bg-zinc-200 dark:bg-zinc-800" />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 async function ComicDetailLoader({ idPromise }: { idPromise: Promise<{ id: string }> }) {
@@ -55,14 +74,7 @@ export default function ComicDetailPage({ params }: ComicDetailPageProps) {
           </Link>
         </div>
 
-        <Suspense
-          fallback={
-            <div className="py-24 flex flex-col items-center justify-center text-zinc-400 gap-3">
-              <Loader2 className="w-8 h-8 animate-spin text-zinc-900 dark:text-white" />
-              <p className="text-xs">Memuat detail komik...</p>
-            </div>
-          }
-        >
+        <Suspense fallback={<ComicDetailSkeleton />}>
           <ComicDetailLoader idPromise={params} />
         </Suspense>
       </main>

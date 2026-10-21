@@ -1,7 +1,6 @@
 import { withTimeout } from '@/utils/withTimeout';
 
-const BASE_URL = 'https://otakudesu.blog';
-const REVALIDATE_SECONDS = 900;
+export const ANIME_BASE_URL = 'https://otakudesu.blog';
 const FETCH_TIMEOUT_MS = 8000;
 
 const FETCH_HEADERS = {
@@ -10,20 +9,32 @@ const FETCH_HEADERS = {
   'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
 };
 
-/** Ambil HTML halaman otakudesu (di-cache Next.js). Null jika gagal atau timeout. */
-export async function fetchHtml(path: string): Promise<string | null> {
+export interface AnimeHtmlResult {
+  /** HTML halaman, atau null jika permintaan gagal. */
+  html: string | null;
+  /** Status HTTP; 0 berarti gagal jaringan atau timeout. */
+  status: number;
+}
+
+/**
+ * Ambil HTML dari otakudesu.blog. Path relatif ("/anime/x/") atau URL penuh.
+ * Hanya dipanggil dari fungsi `use cache`, jadi tidak memakai cache fetch bawaan.
+ */
+export async function fetchHtmlResult(target: string): Promise<AnimeHtmlResult> {
+  const url = target.startsWith('http') ? target : `${ANIME_BASE_URL}${target}`;
+
   try {
-    const res = await withTimeout(
-      fetch(`${BASE_URL}${path}`, {
-        headers: FETCH_HEADERS,
-        next: { revalidate: REVALIDATE_SECONDS },
-      }),
-      FETCH_TIMEOUT_MS
-    );
-    return res.ok ? await res.text() : null;
+    const res = await withTimeout(fetch(url, { headers: FETCH_HEADERS }), FETCH_TIMEOUT_MS);
+    if (!res.ok) return { html: null, status: res.status };
+    return { html: await res.text(), status: res.status };
   } catch {
-    return null;
+    return { html: null, status: 0 };
   }
+}
+
+/** Seperti fetchHtmlResult, tetapi hanya mengembalikan HTML (null jika gagal). */
+export async function fetchHtml(path: string): Promise<string | null> {
+  return (await fetchHtmlResult(path)).html;
 }
 
 /** Path listing berhalaman, mis. pagedPath('ongoing-anime', 2) -> /ongoing-anime/page/2/. */

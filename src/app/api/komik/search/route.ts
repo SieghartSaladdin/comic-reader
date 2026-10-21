@@ -1,7 +1,7 @@
-export const dynamic = 'force-dynamic';
-
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import { searchComics } from '@/services/komikService';
+import { cachedJson } from '@/utils/apiResponse';
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,13 +19,10 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await searchComics(query);
-    return NextResponse.json({
-      success: true,
-      query,
-      data,
-      count: data.length,
-    });
+    return cachedJson({ success: true, query, data, count: data.length }, 'search');
   } catch (error) {
+    // Jangan telan sinyal internal Next.js (mis. bail-out prerender)
+    unstable_rethrow(error);
     console.error('API Error /api/komik/search:', error);
     return NextResponse.json(
       {

@@ -5,6 +5,9 @@ import { ComicPage, ReaderZoomMode } from '@/types/comic';
 import { ReaderImage } from './ReaderImage';
 import { ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
 
+/** Jumlah halaman awal yang dimuat segera (sisanya lazy). */
+const PRIORITY_PAGES = 2;
+
 interface WebtoonReaderProps {
   pages: ComicPage[];
   currentPage: number;
@@ -117,6 +120,7 @@ export const WebtoonReader: React.FC<WebtoonReaderProps> = ({
           >
             <ReaderImage
               page={page}
+              priority={page.pageNumber <= PRIORITY_PAGES}
               zoom={zoom}
               alt={`Webtoon Page ${page.pageNumber}`}
             />

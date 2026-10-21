@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { cacheLife, cacheTag } from 'next/cache';
 import {
   AnimeCatalogParams,
   AnimeCatalogResult,
@@ -40,14 +41,24 @@ const loadOngoing = async (page: number): Promise<SectionPage> => {
 
 const loadComplete = (page: number) => loadSection(COMPLETE, page, parseCompleteAnimeList);
 
+/** Jumlah halaman sebuah section. Di-cache terpisah agar tiap halaman katalog tidak mengambilnya ulang. */
+async function getSectionTotalPages(section: string): Promise<number> {
+  'use cache';
+  cacheTag('anime-catalog');
+
+  const html = await fetchHtml(pagedPath(section, 1));
+  if (html) cacheLife('catalog');
+  else cacheLife('seconds');
+  return html ? findLastPage(html, section) : 1;
+}
+
 /** Semua anime: halaman ongoing lebih dulu, disusul halaman anime tamat. */
 async function loadAll(page: number): Promise<SectionPage> {
-  const [ongoingFirst, completeFirst] = await Promise.all([
-    loadSection(ONGOING, 1, () => []),
-    loadSection(COMPLETE, 1, () => []),
+  const [ongoingPages, completePages] = await Promise.all([
+    getSectionTotalPages(ONGOING),
+    getSectionTotalPages(COMPLETE),
   ]);
-  const ongoingPages = ongoingFirst.totalPages;
-  const totalPages = ongoingPages + completeFirst.totalPages;
+  const totalPages = ongoingPages + completePages;
 
   const result =
     page <= ongoingPages ? await loadOngoing(page) : await loadComplete(page - ongoingPages);
@@ -65,21 +76,32 @@ function toResult(section: SectionPage, page: number): AnimeCatalogResult {
 
 /** Katalog anime: pencarian judul, filter genre, filter status (semua/ongoing/tamat), dan pagination. */
 export async function getAnimeCatalog(params: AnimeCatalogParams): Promise<AnimeCatalogResult> {
+  'use cache';
+  cacheTag('anime-feed', 'anime-catalog');
+
   const query = params.query?.trim();
   if (query) {
     const animes = await searchAnime(query);
+    cacheLife('search');
     return { animes, page: 1, totalPages: 1, hasNextPage: false };
   }
 
   const page = Math.max(1, Math.floor(params.page || 1));
   const genre = ANIME_GENRES.find((item) => item.slug === params.genre);
 
+  let result: AnimeCatalogResult;
   if (genre) {
-    const section = await loadSection(`genres/${genre.slug}`, page, parseGenreAnimeList);
-    return toResult(section, page);
+    result = toResult(await loadSection(`genres/${genre.slug}`, page, parseGenreAnimeList), page);
+  } else if (params.status === 'ongoing') {
+    result = toResult(await loadOngoing(page), page);
+  } else if (params.status === 'complete') {
+    result = toResult(await loadComplete(page), page);
+  } else {
+    result = toResult(await loadAll(page), page);
   }
 
-  if (params.status === 'ongoing') return toResult(await loadOngoing(page), page);
-  if (params.status === 'complete') return toResult(await loadComplete(page), page);
-  return toResult(await loadAll(page), page);
+  // Halaman kosong biasanya berarti sumber gagal: jangan disimpan lama.
+  if (result.animes.length > 0) cacheLife('catalog');
+  else cacheLife('seconds');
+  return result;
 }

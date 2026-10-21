@@ -5,6 +5,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ComicPage, ReaderZoomMode } from '@/types/comic';
 import { ReaderImage } from './ReaderImage';
 
+/** Jumlah halaman berikutnya yang dimuat lebih awal. */
+const PRELOAD_AHEAD = 2;
+
 interface MangaReaderProps {
   pages: ComicPage[];
   currentPage: number;
@@ -97,6 +100,16 @@ export const MangaReader: React.FC<MangaReaderProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isRTL, handleNextPage, handlePrevPage]);
 
+  // Muat lebih awal beberapa halaman berikutnya agar pindah halaman terasa instan.
+  useEffect(() => {
+    pages.slice(currentPage, currentPage + PRELOAD_AHEAD).forEach((page) => {
+      if (!page.imageUrl) return;
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = page.imageUrl;
+    });
+  }, [pages, currentPage]);
+
   const activePage = pages[currentPage - 1] || pages[0];
 
   if (!pages || pages.length === 0 || !activePage) {
@@ -112,7 +125,9 @@ export const MangaReader: React.FC<MangaReaderProps> = ({
       {/* Active Page Image */}
       <div className="relative z-0 max-w-full flex items-center justify-center">
         <ReaderImage
+          key={activePage.pageNumber}
           page={activePage}
+          priority
           zoom={zoom}
           alt={`Manga Page ${currentPage}`}
         />

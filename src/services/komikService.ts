@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { cacheLife, cacheTag } from 'next/cache';
 import { Comic, ComicListItem, ComicPage } from '@/types/comic';
 import {
   parseAnimePostList,
@@ -7,107 +8,104 @@ import {
   ChapterDetailResult,
 } from './komikParser';
 import { enrichRecentChapters } from './komikEnrichService';
+import { fetchKomikHtml } from './komikSource';
 
-const BASE_URL = 'https://komikindo.ch';
-const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-
-const FETCH_HEADERS = {
-  'User-Agent': USER_AGENT,
-  Accept:
-    'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-  'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-};
+/**
+ * Setiap fungsi di sini memakai `use cache`: hasil parse (bukan HTML mentah) disimpan di server,
+ * disajikan instan, dan diperbarui di latar setelah `revalidate`. Hasil kosong/gagal diberi umur
+ * sangat pendek (`seconds`) agar kegagalan sesaat tidak tersimpan lama.
+ */
 
 /**
  * Mengambil daftar komik terpopuler dari komikindo.ch (homepage section populer/hot dengan data chapter lengkap)
  */
 export async function getPopularComics(): Promise<ComicListItem[]> {
-  try {
-    const res = await fetch(`${BASE_URL}/`, {
-      headers: FETCH_HEADERS,
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+  'use cache';
+  cacheTag('komik-feed');
 
-    const html = await res.text();
-    const $ = cheerio.load(html);
-    const selector = $('.mangapopuler .animepost').length
-      ? '.mangapopuler .animepost'
-      : '.listupd:first-of-type .animepost';
-    return await enrichRecentChapters(parseAnimePostList($, selector));
-  } catch (error) {
-    console.error('getPopularComics error:', error);
+  const { html } = await fetchKomikHtml('/');
+  if (!html) {
+    cacheLife('seconds');
     return [];
   }
+
+  const $ = cheerio.load(html);
+  const selector = $('.mangapopuler .animepost').length
+    ? '.mangapopuler .animepost'
+    : '.listupd:first-of-type .animepost';
+  const comics = await enrichRecentChapters(parseAnimePostList($, selector));
+
+  if (comics.length > 0) cacheLife('feed');
+  else cacheLife('seconds');
+  return comics;
 }
 
 /**
  * Mengambil komik dengan rilis chapter terbaru
  */
 export async function getLatestComics(): Promise<ComicListItem[]> {
-  try {
-    const res = await fetch(`${BASE_URL}/komik-terbaru/`, {
-      headers: FETCH_HEADERS,
-      next: { revalidate: 600 },
-    });
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+  'use cache';
+  cacheTag('komik-feed');
 
-    const html = await res.text();
-    const $ = cheerio.load(html);
-    return await enrichRecentChapters(parseAnimePostList($));
-  } catch (error) {
-    console.error('getLatestComics error:', error);
+  const { html } = await fetchKomikHtml('/komik-terbaru/');
+  if (!html) {
+    cacheLife('seconds');
     return [];
   }
+
+  const comics = await enrichRecentChapters(parseAnimePostList(cheerio.load(html)));
+  if (comics.length > 0) cacheLife('feed');
+  else cacheLife('seconds');
+  return comics;
 }
 
 /**
  * Mencari komik berdasarkan kata kunci (query)
  */
 export async function searchComics(query: string): Promise<ComicListItem[]> {
-  if (!query || !query.trim()) return [];
+  'use cache';
 
-  try {
-    const encoded = encodeURIComponent(query.trim());
-    const res = await fetch(`${BASE_URL}/?s=${encoded}`, {
-      headers: FETCH_HEADERS,
-      next: { revalidate: 300 },
-    });
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-    const html = await res.text();
-    const $ = cheerio.load(html);
-    return await enrichRecentChapters(parseAnimePostList($));
-  } catch (error) {
-    console.error('searchComics error:', error);
+  const keyword = query?.trim();
+  if (!keyword) {
+    cacheLife('minutes');
     return [];
   }
+
+  const { html } = await fetchKomikHtml(`/?s=${encodeURIComponent(keyword)}`);
+  if (!html) {
+    cacheLife('seconds');
+    return [];
+  }
+
+  const comics = await enrichRecentChapters(parseAnimePostList(cheerio.load(html)));
+  cacheLife('search');
+  return comics;
 }
 
 /**
  * Mengambil detail lengkap komik beserta daftar chapter
  */
 export async function getComicDetail(slug: string): Promise<Comic | null> {
-  if (!slug) return null;
+  'use cache';
+  cacheTag('komik-detail', `komik-detail:${slug}`);
 
-  try {
-    const targetUrl = slug.startsWith('http')
-      ? slug
-      : `${BASE_URL}/komik/${slug}/`;
-    const res = await fetch(targetUrl, {
-      headers: FETCH_HEADERS,
-      next: { revalidate: 1800 },
-    });
-    if (!res.ok) return null;
-
-    const html = await res.text();
-    const $ = cheerio.load(html);
-    return parseComicDetailHtml($, slug);
-  } catch (error) {
-    console.error(`getComicDetail error for slug "${slug}":`, error);
+  if (!slug) {
+    cacheLife('minutes');
     return null;
   }
+
+  const { html, status } = await fetchKomikHtml(slug.startsWith('http') ? slug : `/komik/${slug}/`);
+  if (!html) {
+    // 404 aman disimpan sebentar; kegagalan jaringan/5xx jangan sampai tersimpan lama.
+    if (status === 404) cacheLife('minutes');
+    else cacheLife('seconds');
+    return null;
+  }
+
+  const comic = parseComicDetailHtml(cheerio.load(html), slug);
+  if (comic) cacheLife('detail');
+  else cacheLife('minutes');
+  return comic;
 }
 
 /**
@@ -126,25 +124,27 @@ export async function getChapterPages(
 export async function getChapterDetail(
   chapterSlug: string
 ): Promise<ChapterDetailResult | null> {
-  if (!chapterSlug) return null;
+  'use cache';
+  cacheTag('komik-chapter', `komik-chapter:${chapterSlug}`);
 
-  try {
-    const targetUrl = chapterSlug.startsWith('http')
-      ? chapterSlug
-      : `${BASE_URL}/${chapterSlug}/`;
-    const res = await fetch(targetUrl, {
-      headers: FETCH_HEADERS,
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return null;
-
-    const html = await res.text();
-    const $ = cheerio.load(html);
-    return parseChapterDetailHtml($, chapterSlug);
-  } catch (error) {
-    console.error(`getChapterDetail error for "${chapterSlug}":`, error);
+  if (!chapterSlug) {
+    cacheLife('minutes');
     return null;
   }
+
+  const { html, status } = await fetchKomikHtml(
+    chapterSlug.startsWith('http') ? chapterSlug : `/${chapterSlug}/`
+  );
+  if (!html) {
+    if (status === 404) cacheLife('minutes');
+    else cacheLife('seconds');
+    return null;
+  }
+
+  const chapter = parseChapterDetailHtml(cheerio.load(html), chapterSlug);
+  if (chapter && chapter.pages.length > 0) cacheLife('chapter');
+  else cacheLife('minutes');
+  return chapter;
 }
 
 export {
@@ -152,5 +152,3 @@ export {
   type FilterComicParams,
   type FilterComicResult,
 } from './komikFilterService';
-
-

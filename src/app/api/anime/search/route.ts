@@ -1,7 +1,7 @@
-export const dynamic = 'force-dynamic';
-
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import { searchAnime } from '@/services/animeService';
+import { cachedJson } from '@/utils/apiResponse';
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,12 +17,10 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await searchAnime(query);
-    return NextResponse.json({
-      success: true,
-      count: data.length,
-      data,
-    });
+    return cachedJson({ success: true, count: data.length, data }, 'search');
   } catch (error) {
+    // Jangan telan sinyal internal Next.js (mis. bail-out prerender)
+    unstable_rethrow(error);
     console.error('API Error /api/anime/search:', error);
     return NextResponse.json(
       { success: false, error: 'Gagal mencari anime' },

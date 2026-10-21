@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { unstable_rethrow } from 'next/navigation';
 import { getComicDetail } from '@/services/komikService';
+import { cachedJson } from '@/utils/apiResponse';
 
 export async function GET(
   _request: NextRequest,
@@ -22,11 +24,10 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      data,
-    });
+    return cachedJson({ success: true, data }, 'detail');
   } catch (error) {
+    // Jangan telan sinyal internal Next.js (mis. bail-out prerender)
+    unstable_rethrow(error);
     console.error('API Error /api/komik/detail/[slug]:', error);
     return NextResponse.json(
       { success: false, error: 'Gagal memuat detail komik' },

@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { cacheLife, cacheTag } from 'next/cache';
 import { AnimeListItem } from '@/types/anime';
 import { parseOngoingAnimeList } from './animeParser';
 import { parseCompleteAnimeList, parseGenreAnimeList } from './animeCatalogParser';
@@ -96,11 +97,19 @@ async function getGenreGroup(genre: (typeof GENRES)[number]): Promise<AnimeRecom
 
 /** Kelompok rekomendasi anime: terbaru, rating tertinggi, anime lama, dan beberapa genre populer. */
 export async function getAnimeRecommendationGroups(): Promise<AnimeRecommendationGroup[]> {
-  const groups = await Promise.all([
-    getLatestGroup(),
-    getTopRatedGroup(),
-    getClassicGroup(),
-    ...GENRES.map(getGenreGroup),
-  ]);
-  return groups.filter((group) => group.animes.length > 0);
+  'use cache';
+  cacheTag('anime-feed', 'anime-recommendation');
+
+  const groups = (
+    await Promise.all([
+      getLatestGroup(),
+      getTopRatedGroup(),
+      getClassicGroup(),
+      ...GENRES.map(getGenreGroup),
+    ])
+  ).filter((group) => group.animes.length > 0);
+
+  if (groups.length > 0) cacheLife('catalog');
+  else cacheLife('seconds');
+  return groups;
 }
