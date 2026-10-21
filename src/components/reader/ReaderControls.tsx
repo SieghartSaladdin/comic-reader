@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Settings } from 'lucide-react';
+import { ArrowLeft, ChevronDown, Settings } from 'lucide-react';
 import { READER_BAR_ATTR } from '@/hooks/useHideOnUserScroll';
 
 export interface ChapterNavItem {
@@ -25,12 +25,11 @@ interface ReaderControlsProps {
   chapterTitle: string;
   chapterNumber: number;
   chapters: ChapterNavItem[];
-  currentChapterId: string;
-  onSelectChapter: (chapterId: string) => void;
+  onOpenChapterList: () => void;
   onOpenSettings: () => void;
 }
 
-/** Header reader: kembali ke detail komik, judul, pilihan chapter cepat, dan pengaturan. */
+/** Header reader: kembali ke detail komik, judul, tombol daftar chapter, dan pengaturan. */
 export const ReaderControls: React.FC<ReaderControlsProps> = ({
   isVisible,
   comicId,
@@ -38,8 +37,7 @@ export const ReaderControls: React.FC<ReaderControlsProps> = ({
   chapterTitle,
   chapterNumber,
   chapters,
-  currentChapterId,
-  onSelectChapter,
+  onOpenChapterList,
   onOpenSettings,
 }) => {
   return (
@@ -74,18 +72,17 @@ export const ReaderControls: React.FC<ReaderControlsProps> = ({
 
         {/* Right: Chapter Dropdown Selector & Settings Button */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          {chapters.length > 0 && (
-            <select
-              value={currentChapterId}
-              onChange={(e) => onSelectChapter(e.target.value)}
-              className="bg-zinc-900 border border-zinc-700/80 hover:border-zinc-500 text-zinc-200 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-white cursor-pointer max-w-[140px] md:max-w-[200px] truncate"
+          {/* Satu-satunya pemilih chapter: membuka daftar yang sama dengan tombol di bar bawah */}
+          {chapters.length > 1 && (
+            <button
+              type="button"
+              onClick={onOpenChapterList}
+              aria-label="Buka daftar chapter"
+              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-zinc-700/80 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-200 transition hover:border-zinc-500"
             >
-              {chapters.map((ch) => (
-                <option key={ch.id} value={ch.id}>
-                  Ch. {ch.chapterNumber} {ch.title ? `- ${ch.title}` : ''}
-                </option>
-              ))}
-            </select>
+              <span>Ch. {chapterNumber}</span>
+              <ChevronDown className="h-3.5 w-3.5 text-zinc-400" />
+            </button>
           )}
 
           <button

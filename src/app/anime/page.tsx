@@ -98,37 +98,43 @@ export default function AnimePage() {
       <Navbar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
-        {/* Editorial Architecture Hero Banner */}
-        <div className="relative overflow-hidden rounded-3xl bg-white dark:bg-[#121214] border border-zinc-200 dark:border-zinc-800 p-6 sm:p-10 shadow-xs transition-colors duration-200">
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="space-y-4 max-w-2xl text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 text-xs font-semibold uppercase tracking-wider">
-                <Tv className="w-3.5 h-3.5" />
-                <span>Anime Mirror Subtitle Indonesia</span>
+        {/* Hero: kartu sinematik bernada merah tua, selaras dengan hero halaman komik */}
+        <div className="relative isolate overflow-hidden rounded-3xl bg-[#0d0a0a] text-white shadow-xl ring-1 ring-black/5 dark:ring-white/10">
+          <div className="absolute inset-0 -z-10" aria-hidden="true">
+            <div className="absolute -left-24 -top-28 h-80 w-80 rounded-full bg-accent-700/35 blur-3xl" />
+            <div className="absolute -bottom-32 right-0 h-80 w-96 rounded-full bg-accent-900/40 blur-3xl" />
+            <div className="absolute inset-0 bg-gradient-to-br from-accent-950/60 via-transparent to-transparent" />
+          </div>
+
+          <div className="flex flex-col items-center justify-between gap-8 px-6 py-10 sm:px-10 lg:flex-row lg:px-14 lg:py-14">
+            <div className="max-w-2xl space-y-5 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-accent-200 ring-1 ring-white/10 backdrop-blur">
+                <Tv className="h-3.5 w-3.5" />
+                <span>Anime Sub Indo</span>
               </div>
 
-              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-zinc-950 dark:text-white tracking-tight leading-tight">
-                Streaming Serial Anime Sub Indo
+              <h1 className="text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+                Streaming Serial <span className="text-accent-300">Anime</span>
               </h1>
 
-              <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-xl">
-                Tonton episode anime ongoing dan tamat kualitas HD dengan server pemutar cepat,
-                tata letak editorial tanpa distraksi, serta pembaruan rilis setiap minggu.
+              <p className="mx-auto max-w-xl text-sm leading-relaxed text-white/70 lg:mx-0">
+                Tonton episode anime ongoing dan tamat dengan server pemutar cepat, tata letak tanpa
+                distraksi, serta pembaruan rilis setiap minggu.
               </p>
 
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-1 lg:justify-start">
                 <a
                   href="#anime-grid"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-black text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-xs sm:text-sm font-semibold shadow-xs transition-all cursor-pointer"
+                  className="flex items-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white shadow-[0_8px_28px_rgba(152,64,60,0.45)] transition hover:-translate-y-0.5 hover:bg-accent-500"
                 >
-                  <PlayCircle className="w-4 h-4" />
-                  <span>Jelajahi Episode Terbaru</span>
+                  <PlayCircle className="h-4 w-4" />
+                  <span>Jelajahi Katalog</span>
                 </a>
                 <Link
                   href="/"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-xs sm:text-sm font-medium border border-zinc-300 dark:border-zinc-700 transition-all cursor-pointer"
+                  className="flex items-center gap-2 rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/15 backdrop-blur transition hover:bg-white/20"
                 >
-                  <span>Baca Komik & Manga</span>
+                  <span>Baca Komik &amp; Manga</span>
                 </Link>
               </div>
             </div>

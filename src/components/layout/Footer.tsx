@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ShieldAlert } from 'lucide-react';
+import { Logo } from './Logo';
 
 export const Footer: React.FC = () => {
   const currentYear = 2026;
@@ -13,16 +14,8 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
           {/* Brand info */}
           <div className="md:col-span-2 space-y-3">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2.5 font-bold text-base tracking-tight text-zinc-900 dark:text-white group"
-            >
-              <div className="w-7 h-7 rounded-md bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center font-bold text-xs tracking-widest">
-                CA
-              </div>
-              <span className="tracking-tight">
-                COMIC AND ANIME
-              </span>
+            <Link href="/" className="inline-flex" aria-label="Comic and Anime - beranda">
+              <Logo showTagline markClassName="h-8 w-8" />
             </Link>
             <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-sm leading-relaxed">
               Platform editorial digital untuk membaca Webtoon, Manga, dan streaming serial Anime
@@ -99,6 +92,9 @@ export const Footer: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Ruang untuk bar tab navigasi bawah di layar kecil agar konten tidak tertutup */}
+      <div aria-hidden="true" className="h-[calc(4rem+env(safe-area-inset-bottom))] md:hidden" />
     </footer>
   );
 };

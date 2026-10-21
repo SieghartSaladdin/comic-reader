@@ -49,7 +49,7 @@ export const AnimeCatalogFilters: React.FC<AnimeCatalogFiltersProps> = ({
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Cari judul anime..."
             aria-label="Cari judul anime"
-            className="w-full rounded-xl border border-zinc-200 bg-zinc-100 py-2.5 pl-10 pr-9 text-sm text-zinc-900 placeholder-zinc-400 transition-all focus:border-violet-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+            className="w-full rounded-xl border border-zinc-200 bg-zinc-100 py-2.5 pl-10 pr-9 text-sm text-zinc-900 placeholder-zinc-400 transition-all focus:border-accent-500 focus:outline-none dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
           />
           {searchInput && (
             <button
@@ -70,7 +70,7 @@ export const AnimeCatalogFilters: React.FC<AnimeCatalogFiltersProps> = ({
             onChange={(e) => onGenreChange(e.target.value)}
             disabled={isSearching}
             aria-label="Filter genre"
-            className="w-full cursor-pointer appearance-none rounded-xl border border-zinc-200 bg-zinc-100 py-2.5 pl-10 pr-4 text-sm text-zinc-900 focus:border-violet-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
+            className="w-full cursor-pointer appearance-none rounded-xl border border-zinc-200 bg-zinc-100 py-2.5 pl-10 pr-4 text-sm text-zinc-900 focus:border-accent-500 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white"
           >
             <option value="">Semua Genre</option>
             {ANIME_GENRES.map((item) => (
@@ -93,7 +93,7 @@ export const AnimeCatalogFilters: React.FC<AnimeCatalogFiltersProps> = ({
               disabled={statusDisabled}
               className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors ${
                 active
-                  ? 'bg-violet-600 text-white shadow-sm'
+                  ? 'bg-accent-600 text-white shadow-sm'
                   : 'cursor-pointer bg-zinc-200/70 text-zinc-700 hover:bg-zinc-300/70 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700'
               } disabled:cursor-not-allowed disabled:opacity-40`}
             >

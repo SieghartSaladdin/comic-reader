@@ -13,7 +13,10 @@ import { MangaReader } from './MangaReader';
 import { ReaderControls, ChapterNavItem } from './ReaderControls';
 import { ReaderBottomBar } from './ReaderBottomBar';
 
-// Panel pengaturan hanya dimuat saat pertama dibuka, bukan bersama JavaScript awal reader.
+// Daftar chapter dan panel pengaturan hanya dimuat saat pertama dibuka, bukan bersama JavaScript awal.
+const ChapterListSheet = dynamic(() =>
+  import('./ChapterListSheet').then((mod) => mod.ChapterListSheet)
+);
 const ReaderSettingsModal = dynamic(() =>
   import('./ReaderSettingsModal').then((mod) => mod.ReaderSettingsModal)
 );
@@ -41,6 +44,7 @@ export const ReaderClient: React.FC<ReaderClientProps> = ({ comicId, chapterId, 
   // Reader UI States
   const [controlsVisible, setControlsVisible] = useState<boolean>(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isChapterListOpen, setIsChapterListOpen] = useState<boolean>(false);
   const [webtoonGap, setWebtoonGap] = useState<boolean>(false);
   // Mulai dari bawaan agar HTML server dan klien identik; pengaturan tersimpan dimuat setelah mount.
   const [settings, setSettings] = useState<ReaderSettings>(DEFAULT_READER_SETTINGS);
@@ -172,8 +176,7 @@ export const ReaderClient: React.FC<ReaderClientProps> = ({ comicId, chapterId, 
         chapterTitle={chapter.title}
         chapterNumber={chapter.chapterNumber}
         chapters={chapters}
-        currentChapterId={chapterId}
-        onSelectChapter={handleSelectChapter}
+        onOpenChapterList={() => setIsChapterListOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
@@ -183,9 +186,7 @@ export const ReaderClient: React.FC<ReaderClientProps> = ({ comicId, chapterId, 
         comicTitle={comic.title}
         chapterTitle={chapter.title}
         chapterNumber={chapter.chapterNumber}
-        chapters={chapters}
-        currentChapterId={chapterId}
-        onSelectChapter={handleSelectChapter}
+        onOpenChapterList={() => setIsChapterListOpen(true)}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={goToPage}
@@ -231,6 +232,17 @@ export const ReaderClient: React.FC<ReaderClientProps> = ({ comicId, chapterId, 
           />
         )}
       </main>
+
+      {/* Daftar chapter: satu-satunya pemilih chapter (dibuka dari header maupun bar bawah) */}
+      {isChapterListOpen && (
+        <ChapterListSheet
+          isOpen={isChapterListOpen}
+          onClose={() => setIsChapterListOpen(false)}
+          chapters={chapters}
+          currentChapterId={chapterId}
+          onSelectChapter={handleSelectChapter}
+        />
+      )}
 
       {/* Settings Modal */}
       {isSettingsOpen && (

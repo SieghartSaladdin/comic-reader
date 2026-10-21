@@ -38,7 +38,7 @@ export const RecommendationRail: React.FC<RecommendationRailProps> = ({
     <section className="space-y-4" aria-label={title}>
       <div className="flex items-end justify-between gap-3">
         <div className="flex items-center gap-2">
-          <div className="rounded-lg bg-violet-600/10 p-1.5 text-violet-600 dark:text-violet-400">
+          <div className="rounded-lg bg-accent-600/10 p-1.5 text-accent-600 dark:text-accent-400">
             <Sparkles className="h-4 w-4" />
           </div>
           <div>
@@ -78,7 +78,7 @@ export const RecommendationRail: React.FC<RecommendationRailProps> = ({
               onClick={() => selectTab(tab.key)}
               className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
                 active
-                  ? 'bg-violet-600 text-white shadow-sm'
+                  ? 'bg-accent-600 text-white shadow-sm'
                   : 'bg-zinc-200/70 text-zinc-700 hover:bg-zinc-300/70 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700'
               }`}
             >

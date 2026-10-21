@@ -71,7 +71,7 @@ export const ReaderImage: React.FC<ReaderImageProps> = ({
       {/* Loading Skeleton Indicator */}
       {isLoading && !showError && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 backdrop-blur-sm text-zinc-400 z-10 transition-opacity">
-          <Loader2 className="w-8 h-8 animate-spin text-purple-500 mb-2" />
+          <Loader2 className="w-8 h-8 animate-spin text-accent-500 mb-2" />
           <span className="text-xs font-medium tracking-wider">Memuat Halaman {page.pageNumber}...</span>
         </div>
       )}
@@ -86,7 +86,7 @@ export const ReaderImage: React.FC<ReaderImageProps> = ({
           </p>
           <button
             onClick={handleRetry}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 active:scale-95 text-white rounded-lg text-xs font-medium transition cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 bg-accent-600 hover:bg-accent-700 active:scale-95 text-white rounded-lg text-xs font-medium transition cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Coba Muat Ulang

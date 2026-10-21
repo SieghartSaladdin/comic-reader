@@ -24,6 +24,65 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/*
+ * Palet aksen: merah tua redup (oxblood). Dipakai lewat kelas `bg-accent-600`, `text-accent-400`,
+ * `ring-accent-500/60`, dst. 600 = warna tombol/penanda utama, 400 = teks aksen di latar gelap.
+ */
+@theme {
+  --color-accent-50: #fbf3f2;
+  --color-accent-100: #f6e4e2;
+  --color-accent-200: #ecc8c4;
+  --color-accent-300: #dea39d;
+  --color-accent-400: #cb7870;
+  --color-accent-500: #b4554e;
+  --color-accent-600: #98403c;
+  --color-accent-700: #7d3330;
+  --color-accent-800: #672d2d;
+  --color-accent-900: #562929;
+  --color-accent-950: #301313;
+}
+
+/* Animasi hero: teks masuk dari bawah, dan indikator progres slide yang mengisi sendiri. */
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.hero-enter {
+  animation: hero-enter 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-enter {
+    animation: none;
+  }
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent-600) 45%, transparent);
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-500);
+  outline-offset: 2px;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);

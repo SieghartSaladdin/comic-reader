@@ -1,208 +1,173 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Play, Info, Star, ChevronLeft, ChevronRight, Eye, BookOpen } from 'lucide-react';
-import { Comic, ComicListItem } from '@/types/comic';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { HeroComic } from './heroTypes';
+import { HeroSlideContent } from './HeroSlideContent';
+import { HeroPosterStack } from './HeroPosterStack';
+
+const SLIDE_DURATION_MS = 7000;
+const SWIPE_THRESHOLD_PX = 50;
 
 interface HeroBannerProps {
-  comics: (Comic | ComicListItem)[];
+  comics: HeroComic[];
 }
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({ comics }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [bgError, setBgError] = useState(false);
-  const [coverError, setCoverError] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const touchStartX = useRef<number | null>(null);
+  const count = comics.length;
 
+  // Hormati preferensi "kurangi gerakan": tanpa autoplay dan animasi progres.
   useEffect(() => {
-    setBgError(false);
-    setCoverError(false);
-  }, [currentIndex]);
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(query.matches);
+    const handleChange = () => setReducedMotion(query.matches);
+    query.addEventListener('change', handleChange);
+    return () => query.removeEventListener('change', handleChange);
+  }, []);
 
-  // Auto slide every 6 seconds unless hovered
-  useEffect(() => {
-    if (comics.length <= 1 || isHovered) return;
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % comics.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, [comics.length, isHovered]);
+  const goTo = useCallback(
+    (next: number) => setIndex(((next % count) + count) % count),
+    [count]
+  );
 
-  if (!comics || comics.length === 0) return null;
+  if (!comics || count === 0) return null;
 
-  const current = comics[currentIndex];
-  const comicKey = current.slug || current.id;
-  const fullComic = current as Partial<Comic>;
+  const autoplay = count > 1 && !reducedMotion;
 
-  const displayBanner = fullComic.bannerImage || current.coverImage;
-  const displayDesc =
-    fullComic.description ||
-    `Nikmati bab terbaru dari ${current.title} dengan terjemahan bahasa Indonesia jernih dan tata letak berkualitas tinggi di Comic and Anime.`;
-  const displayGenres =
-    fullComic.genres && fullComic.genres.length > 0
-      ? fullComic.genres
-      : [current.type, 'Sub Indo', 'Populer'];
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + comics.length) % comics.length);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0]?.clientX ?? null;
   };
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % comics.length);
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const startX = touchStartX.current;
+    touchStartX.current = null;
+    const endX = e.changedTouches[0]?.clientX;
+    if (startX === null || endX === undefined) return;
+    const delta = endX - startX;
+    if (Math.abs(delta) >= SWIPE_THRESHOLD_PX) goTo(index + (delta < 0 ? 1 : -1));
   };
-
-  const readTargetUrl = current.latestChapterSlug
-    ? `/reader/${comicKey}/${current.latestChapterSlug}`
-    : `/comic/${comicKey}`;
 
   return (
-    <div
-      className="relative w-full rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800/80 shadow-sm bg-white dark:bg-[#121214] transition-colors duration-200"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <section
+      aria-roledescription="carousel"
+      aria-label="Komik populer"
+      className="relative isolate w-full overflow-hidden rounded-3xl bg-[#0d0a0a] text-white shadow-xl ring-1 ring-black/5 dark:ring-white/10"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={() => setIsPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
-      {/* Background Banner with Architectural Fade */}
-      <div className="absolute inset-0 z-0">
-        {displayBanner?.trim() && !bgError && (
-          <img
-            src={displayBanner}
-            alt={current.title}
-            fetchPriority="high"
-            decoding="async"
-            onError={() => setBgError(true)}
-            className="w-full h-full object-cover object-center filter blur-[2px] scale-105 opacity-25 dark:opacity-30 dark:brightness-50 transition-all duration-700"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-[#121214] dark:via-[#121214]/85" />
-        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-transparent dark:from-[#121214] dark:via-[#121214]/75" />
-      </div>
-
-      {/* Content Area */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-10 py-10 sm:py-16 md:py-20 flex flex-col md:flex-row items-center gap-8 justify-between">
-        <div className="max-w-2xl space-y-4 text-left">
-          {/* Badges */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest border border-zinc-300 dark:border-zinc-700 bg-zinc-100/90 dark:bg-zinc-800/90 text-zinc-900 dark:text-zinc-100">
-              {current.type}
-            </span>
-            <span className="flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full border border-zinc-300 dark:border-zinc-700 bg-zinc-100/90 dark:bg-zinc-800/90 text-zinc-800 dark:text-zinc-200">
-              <Star className="w-3 h-3 fill-zinc-800 dark:fill-zinc-200 text-zinc-800 dark:text-zinc-200" />
-              {(current.rating || 8.0).toFixed(1)}
-            </span>
-            <span className="flex items-center gap-1 text-[11px] px-2.5 py-1 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 text-zinc-600 dark:text-zinc-400 font-medium">
-              <Eye className="w-3 h-3" />
-              {fullComic.views || 'Populer'}
-            </span>
-          </div>
-
-          {/* Title & Alt Title */}
-          <div>
-            <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-zinc-950 dark:text-white tracking-tight leading-tight">
-              {current.title}
-            </h1>
-            {fullComic.altTitle && (
-              <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-light italic">
-                {fullComic.altTitle}
-              </p>
-            )}
-          </div>
-
-          {/* Genres */}
-          <div className="flex flex-wrap gap-1.5">
-            {displayGenres.map((genre) => (
-              <span
-                key={genre}
-                className="text-[11px] px-2.5 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-800 bg-zinc-100/60 dark:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 font-medium"
-              >
-                {genre}
-              </span>
-            ))}
-          </div>
-
-          {/* Synopsis */}
-          <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 line-clamp-3 leading-relaxed max-w-xl">
-            {displayDesc}
-          </p>
-
-          {/* Actions: High Contrast Black / White */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Link
-              href={readTargetUrl}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-black text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 font-semibold text-xs sm:text-sm transition-all shadow-sm cursor-pointer"
-            >
-              <Play className="w-4 h-4 fill-current" />
-              <span>{current.latestChapter ? `Baca ${current.latestChapter}` : 'Mulai Membaca'}</span>
-            </Link>
-
-            <Link
-              href={`/comic/${comicKey}`}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 font-medium text-xs sm:text-sm transition-all cursor-pointer"
-            >
-              <Info className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
-              <span>Detail Komik</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Featured Cover Card (Desktop) */}
-        <div className="hidden md:block relative w-48 lg:w-56 aspect-[3/4] shrink-0 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700/80 shadow-lg bg-zinc-100 dark:bg-zinc-900">
-          {current.coverImage?.trim() && !coverError ? (
+      {/* Latar: sampul buram tiap slide saling memudar */}
+      <div className="absolute inset-0 -z-10" aria-hidden="true">
+        {comics.map((comic, i) =>
+          comic.coverImage?.trim() ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={current.coverImage}
-              alt={current.title}
-              fetchPriority="high"
+              key={comic.slug || comic.id}
+              src={comic.coverImage}
+              alt=""
+              fetchPriority={i === 0 ? 'high' : 'low'}
               decoding="async"
-              onError={() => setCoverError(true)}
-              className="w-full h-full object-cover"
+              className={`absolute inset-0 h-full w-full scale-110 object-cover object-top blur-xl saturate-125 transition-opacity duration-1000 ${
+                i === index ? 'opacity-60' : 'opacity-0'
+              }`}
             />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center select-none bg-zinc-100 dark:bg-zinc-900 text-zinc-400">
-              <div className="w-12 h-12 rounded-2xl bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center mb-2 shadow-xs text-zinc-700 dark:text-zinc-200">
-                <BookOpen className="w-6 h-6 stroke-[1.75]" />
-              </div>
-              <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 line-clamp-3">
-                {current.title}
-              </span>
-            </div>
-          )}
-        </div>
+          ) : null
+        )}
+        {/* Nada merah tua di atas sampul agar warna hero selalu selaras dengan palet situs */}
+        <div className="absolute inset-0 bg-accent-900/45 mix-blend-color" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0d0a0a] via-[#0d0a0a]/85 to-[#0d0a0a]/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d0a0a] via-transparent to-[#0d0a0a]/40" />
+        <div className="absolute -left-24 -top-28 h-80 w-80 rounded-full bg-accent-700/30 blur-3xl" />
       </div>
 
-      {/* Navigation Arrows & Dots */}
-      {comics.length > 1 && (
-        <>
-          <button
-            onClick={handlePrev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/70 hover:bg-white dark:bg-black/40 dark:hover:bg-black/70 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 backdrop-blur-md transition-all cursor-pointer"
-            aria-label="Previous slide"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={handleNext}
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/70 hover:bg-white dark:bg-black/40 dark:hover:bg-black/70 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 backdrop-blur-md transition-all cursor-pointer"
-            aria-label="Next slide"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
-            {comics.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentIndex(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-                className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                  idx === currentIndex
-                    ? 'w-6 bg-zinc-900 dark:bg-white'
-                    : 'w-2 bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-400 dark:hover:bg-zinc-500'
-                }`}
-              />
-            ))}
-          </div>
-        </>
+      {/* Layar kecil: poster mini miring di pojok kanan atas */}
+      {comics[index].coverImage?.trim() && (
+        <div className="absolute right-5 top-9 z-10 aspect-[3/4] w-24 rotate-3 overflow-hidden rounded-xl shadow-[0_14px_30px_rgba(0,0,0,0.55)] ring-1 ring-white/20 sm:hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            key={comics[index].slug || comics[index].id}
+            src={comics[index].coverImage}
+            alt={comics[index].title}
+            decoding="async"
+            className="hero-enter h-full w-full object-cover"
+          />
+        </div>
       )}
-    </div>
+
+      {/* Isi: teks di kiri, tumpukan poster di kanan */}
+      <div className="flex items-center justify-between gap-6 px-6 pb-24 pt-10 sm:px-10 md:py-14 lg:px-14 lg:py-16">
+        <HeroSlideContent
+          key={comics[index].slug || comics[index].id}
+          comic={comics[index]}
+          position={index}
+          total={count}
+        />
+        <HeroPosterStack comics={comics} activeIndex={index} onSelect={goTo} />
+      </div>
+
+      {/* Kontrol: progres slide (juga menggerakkan autoplay) di kiri bawah, panah di kanan bawah */}
+      {count > 1 && (
+        <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 px-6 pb-6 sm:px-10 lg:px-14">
+          <div className="flex flex-1 items-center gap-2 md:max-w-md" role="tablist" aria-label="Pilih slide">
+            {comics.map((comic, i) => {
+              const isActive = i === index;
+              const isPast = i < index;
+              return (
+                <button
+                  key={comic.slug || comic.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-label={`Slide ${i + 1}: ${comic.title}`}
+                  onClick={() => goTo(i)}
+                  className="group relative h-6 flex-1 cursor-pointer"
+                >
+                  <span className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 overflow-hidden rounded-full bg-white/20 transition-all group-hover:h-1.5">
+                    <span
+                      className="absolute inset-0 origin-left rounded-full bg-accent-300"
+                      style={{
+                        transform: isPast || (isActive && !autoplay) ? 'scaleX(1)' : 'scaleX(0)',
+                        animation:
+                          isActive && autoplay
+                            ? `hero-progress ${SLIDE_DURATION_MS}ms linear forwards`
+                            : undefined,
+                        animationPlayState: isPaused ? 'paused' : 'running',
+                      }}
+                      onAnimationEnd={isActive && autoplay ? () => goTo(index + 1) : undefined}
+                    />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="hidden items-center gap-2 sm:flex">
+            <button
+              type="button"
+              onClick={() => goTo(index - 1)}
+              aria-label="Slide sebelumnya"
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur transition hover:bg-white/20"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => goTo(index + 1)}
+              aria-label="Slide berikutnya"
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur transition hover:bg-white/20"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
   );
 };

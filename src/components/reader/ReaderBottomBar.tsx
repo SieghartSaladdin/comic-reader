@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
-import dynamic from 'next/dynamic';
+import React from 'react';
 import {
   BookOpen,
   ChevronLeft,
@@ -12,21 +11,14 @@ import {
 } from 'lucide-react';
 import { READER_BAR_ATTR } from '@/hooks/useHideOnUserScroll';
 import { ReaderReadingMode } from '@/types/comic';
-import { ChapterNavItem, descriptiveChapterTitle } from './ReaderControls';
-
-// Daftar chapter hanya dimuat saat pertama dibuka.
-const ChapterListSheet = dynamic(() =>
-  import('./ChapterListSheet').then((mod) => mod.ChapterListSheet)
-);
+import { descriptiveChapterTitle } from './ReaderControls';
 
 interface ReaderBottomBarProps {
   isVisible: boolean;
   comicTitle: string;
   chapterTitle: string;
   chapterNumber: number;
-  chapters: ChapterNavItem[];
-  currentChapterId: string;
-  onSelectChapter: (chapterId: string) => void;
+  onOpenChapterList: () => void;
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
@@ -49,9 +41,7 @@ export const ReaderBottomBar: React.FC<ReaderBottomBarProps> = ({
   comicTitle,
   chapterTitle,
   chapterNumber,
-  chapters,
-  currentChapterId,
-  onSelectChapter,
+  onOpenChapterList,
   currentPage,
   totalPages,
   onPageChange,
@@ -63,7 +53,6 @@ export const ReaderBottomBar: React.FC<ReaderBottomBarProps> = ({
   onToggleReadingMode,
   onOpenSettings,
 }) => {
-  const [isListOpen, setIsListOpen] = useState(false);
   const isWebtoon = readingMode === 'webtoon';
   const percent = totalPages > 0 ? Math.round((currentPage / totalPages) * 100) : 0;
 
@@ -103,7 +92,7 @@ export const ReaderBottomBar: React.FC<ReaderBottomBarProps> = ({
               value={currentPage}
               onChange={(e) => onPageChange(Number(e.target.value))}
               aria-label="Pindah halaman"
-              className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-zinc-700 accent-violet-500"
+              className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-zinc-700 accent-accent-500"
             />
           )}
 
@@ -117,9 +106,9 @@ export const ReaderBottomBar: React.FC<ReaderBottomBarProps> = ({
 
             <button
               type="button"
-              onClick={() => setIsListOpen(true)}
+              onClick={onOpenChapterList}
               aria-label="Buka daftar chapter"
-              className="flex h-10 flex-[1.4] cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-violet-600 px-3 text-xs font-semibold text-white transition hover:bg-violet-500 active:scale-95"
+              className="flex h-10 flex-[1.4] cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-accent-600 px-3 text-xs font-semibold text-white transition hover:bg-accent-500 active:scale-95"
             >
               <ListOrdered className="h-4 w-4 shrink-0" />
               <span className="whitespace-nowrap">
@@ -155,16 +144,6 @@ export const ReaderBottomBar: React.FC<ReaderBottomBarProps> = ({
           </div>
         </div>
       </footer>
-
-      {isListOpen && (
-        <ChapterListSheet
-          isOpen={isListOpen}
-          onClose={() => setIsListOpen(false)}
-          chapters={chapters}
-          currentChapterId={currentChapterId}
-          onSelectChapter={onSelectChapter}
-        />
-      )}
     </>
   );
 };

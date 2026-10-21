@@ -6,9 +6,9 @@ import { BookOpen, Clock, Play, Star } from 'lucide-react';
 import { RailItem, RailTag } from './recommendationTypes';
 
 const TAG_STYLES: Record<RailTag, string> = {
-  NEW: 'bg-rose-500',
-  UP: 'bg-orange-500',
-  HOT: 'bg-amber-500',
+  NEW: 'bg-accent-600',
+  UP: 'bg-amber-600',
+  HOT: 'bg-orange-700',
 };
 
 interface RecommendationCardProps {
@@ -25,7 +25,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ item }) 
     <Link
       href={item.href}
       title={item.title}
-      className="group relative block shrink-0 w-[140px] sm:w-[165px] lg:w-[185px] aspect-[10/17] snap-start overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-violet-500/70 focus-visible:outline-2 focus-visible:outline-violet-500"
+      className="group relative block shrink-0 w-[140px] sm:w-[165px] lg:w-[185px] aspect-[10/17] snap-start overflow-hidden rounded-xl bg-zinc-200 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-accent-500/70 focus-visible:outline-2 focus-visible:outline-accent-500"
     >
       {hasCover ? (
         <img
@@ -48,7 +48,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ item }) 
         <div className="flex items-center gap-1">
           {item.timeAgo && (
             <span className="inline-flex items-center gap-1 rounded-md bg-black/65 backdrop-blur-sm pl-1 pr-1.5 py-0.5 text-[10px] font-semibold text-white">
-              <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-violet-600">
+              <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-accent-600">
                 <Clock className="h-2.5 w-2.5" />
               </span>
               {item.timeAgo}
@@ -124,7 +124,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ item }) 
           </ul>
         )}
 
-        <span className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-violet-600 py-1.5 text-[11px] font-semibold text-white">
+        <span className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-accent-600 py-1.5 text-[11px] font-semibold text-white">
           <ActionIcon className="h-3 w-3" />
           {item.action === 'watch' ? 'Tonton' : 'Baca'}
         </span>
