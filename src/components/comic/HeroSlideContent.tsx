@@ -34,10 +34,9 @@ export const HeroSlideContent: React.FC<HeroSlideContentProps> = ({ comic, posit
         <h1 className="line-clamp-3 text-3xl font-black leading-[1.05] tracking-tight text-white drop-shadow-sm sm:line-clamp-2 sm:text-5xl lg:text-6xl">
           {comic.title}
         </h1>
-      </div>
 
       <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-        <span className="rounded-full bg-accent-600 px-3 py-1 uppercase tracking-widest text-white">
+        <span className="rounded-full bg-white px-3 py-1 uppercase tracking-widest text-zinc-950">
           {comic.type}
         </span>
         {rating !== null && (
@@ -57,6 +56,7 @@ export const HeroSlideContent: React.FC<HeroSlideContentProps> = ({ comic, posit
             {comic.updatedTime}
           </span>
         )}
+      </div>
       </div>
 
       {description ? (
@@ -82,7 +82,7 @@ export const HeroSlideContent: React.FC<HeroSlideContentProps> = ({ comic, posit
       <div className="flex flex-wrap items-center gap-3 pt-1">
         <Link
           href={readUrl}
-          className="flex items-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white shadow-[0_8px_28px_rgba(152,64,60,0.45)] transition hover:-translate-y-0.5 hover:bg-accent-500 active:translate-y-0"
+          className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-zinc-950 shadow-[0_8px_28px_rgba(255,255,255,0.12)] transition hover:-translate-y-0.5 hover:bg-zinc-200 active:translate-y-0"
         >
           <Play className="h-4 w-4 fill-current" />
           {comic.latestChapter ? `Baca ${comic.latestChapter}` : 'Mulai Membaca'}

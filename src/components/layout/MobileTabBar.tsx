@@ -28,21 +28,21 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({ pathname, bookmarkCo
               aria-current={active ? 'page' : undefined}
               className={`relative flex flex-col items-center gap-1 pb-2 pt-2.5 text-[10px] font-semibold tracking-wide transition-colors ${
                 active
-                  ? 'text-accent-700 dark:text-accent-300'
+                  ? 'text-zinc-950 dark:text-white'
                   : 'text-zinc-500 hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-200'
               }`}
             >
               {/* Penanda halaman aktif di tepi atas bar */}
               <span
                 aria-hidden="true"
-                className={`absolute top-0 h-[3px] rounded-b-full bg-accent-600 transition-all duration-300 ${
+                className={`absolute top-0 h-[3px] rounded-b-full bg-zinc-900 transition-all dark:bg-white duration-300 ${
                   active ? 'w-9 opacity-100' : 'w-0 opacity-0'
                 }`}
               />
               <span className="relative">
                 <Icon className={`h-5 w-5 transition-transform ${active ? 'scale-110' : ''}`} strokeWidth={active ? 2.3 : 1.9} />
                 {badge !== null && (
-                  <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-accent-600 px-1 text-[9px] font-bold leading-none text-white ring-2 ring-white dark:ring-[#0b0b0d]">
+                  <span className="absolute -right-2.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-zinc-900 px-1 text-[9px] font-bold leading-none text-white dark:bg-white dark:text-zinc-950 ring-2 ring-white dark:ring-[#0b0b0d]">
                     {badge > 99 ? '99+' : badge}
                   </span>
                 )}

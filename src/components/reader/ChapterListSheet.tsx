@@ -122,7 +122,7 @@ export const ChapterListSheet: React.FC<ChapterListSheetProps> = ({
                 onClick={() => setNewestFirst(option.value)}
                 className={`cursor-pointer rounded-[10px] px-3 py-1.5 transition ${
                   newestFirst === option.value
-                    ? 'bg-accent-600 text-white shadow-sm'
+                    ? 'bg-white text-zinc-950 shadow-sm'
                     : 'text-zinc-400 hover:text-zinc-100'
                 }`}
               >
@@ -148,7 +148,7 @@ export const ChapterListSheet: React.FC<ChapterListSheetProps> = ({
                   data-current={isCurrent}
                   onClick={() => handleSelect(ch.id)}
                   className={`flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition ${
-                    isCurrent ? 'bg-accent-600/20 ring-1 ring-accent-500/60' : 'hover:bg-zinc-900'
+                    isCurrent ? 'bg-white/10 ring-1 ring-white/30' : 'hover:bg-zinc-900'
                   }`}
                 >
                   <div className="min-w-0">
@@ -159,7 +159,7 @@ export const ChapterListSheet: React.FC<ChapterListSheetProps> = ({
                       </p>
                     )}
                   </div>
-                  {isCurrent && <Check className="h-4 w-4 shrink-0 text-accent-400" />}
+                  {isCurrent && <Check className="h-4 w-4 shrink-0 text-white" />}
                 </button>
               </li>
             );

@@ -6,9 +6,9 @@ import { BookOpen, Clock, Play, Star } from 'lucide-react';
 import { RailItem, RailTag } from './recommendationTypes';
 
 const TAG_STYLES: Record<RailTag, string> = {
-  NEW: 'bg-accent-600',
-  UP: 'bg-amber-600',
-  HOT: 'bg-orange-700',
+  NEW: 'bg-white text-zinc-950',
+  UP: 'bg-accent-300 text-zinc-950',
+  HOT: 'bg-accent-600 text-white',
 };
 
 interface RecommendationCardProps {
@@ -56,7 +56,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ item }) 
           )}
           {item.tag && (
             <span
-              className={`rounded-md px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-white ${TAG_STYLES[item.tag]}`}
+              className={`rounded-md px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide ${TAG_STYLES[item.tag]}`}
             >
               {item.tag}
             </span>
@@ -124,7 +124,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ item }) 
           </ul>
         )}
 
-        <span className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-accent-600 py-1.5 text-[11px] font-semibold text-white">
+        <span className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-white py-1.5 text-[11px] font-semibold text-zinc-950">
           <ActionIcon className="h-3 w-3" />
           {item.action === 'watch' ? 'Tonton' : 'Baca'}
         </span>

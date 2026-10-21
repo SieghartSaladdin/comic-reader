@@ -74,14 +74,12 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ comics }) => {
               alt=""
               fetchPriority={i === 0 ? 'high' : 'low'}
               decoding="async"
-              className={`absolute inset-0 h-full w-full scale-110 object-cover object-top blur-xl saturate-125 transition-opacity duration-1000 ${
+              className={`absolute inset-0 h-full w-full scale-110 object-cover object-top blur-xl grayscale transition-opacity duration-1000 ${
                 i === index ? 'opacity-60' : 'opacity-0'
               }`}
             />
           ) : null
         )}
-        {/* Nada merah tua di atas sampul agar warna hero selalu selaras dengan palet situs */}
-        <div className="absolute inset-0 bg-accent-900/45 mix-blend-color" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0d0a0a] via-[#0d0a0a]/85 to-[#0d0a0a]/30" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0d0a0a] via-transparent to-[#0d0a0a]/40" />
         <div className="absolute -left-24 -top-28 h-80 w-80 rounded-full bg-accent-700/30 blur-3xl" />

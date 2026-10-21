@@ -108,7 +108,7 @@ export const ReaderBottomBar: React.FC<ReaderBottomBarProps> = ({
               type="button"
               onClick={onOpenChapterList}
               aria-label="Buka daftar chapter"
-              className="flex h-10 flex-[1.4] cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-accent-600 px-3 text-xs font-semibold text-white transition hover:bg-accent-500 active:scale-95"
+              className="flex h-10 flex-[1.4] cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-white px-3 text-xs font-semibold text-zinc-950 transition hover:bg-zinc-200 active:scale-95"
             >
               <ListOrdered className="h-4 w-4 shrink-0" />
               <span className="whitespace-nowrap">

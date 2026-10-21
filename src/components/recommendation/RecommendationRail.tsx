@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { RailTab } from './recommendationTypes';
 import { RecommendationCard } from './RecommendationCard';
 
@@ -9,12 +10,15 @@ interface RecommendationRailProps {
   title?: string;
   description?: string;
   tabs: RailTab[];
+  /** Tautan "Lihat semua" di kanan judul (mis. ke katalog lengkap). */
+  viewAllHref?: string;
 }
 
 export const RecommendationRail: React.FC<RecommendationRailProps> = ({
   title = 'Rekomendasi',
   description,
   tabs,
+  viewAllHref,
 }) => {
   const [activeKey, setActiveKey] = useState(tabs[0]?.key ?? '');
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -38,7 +42,7 @@ export const RecommendationRail: React.FC<RecommendationRailProps> = ({
     <section className="space-y-4" aria-label={title}>
       <div className="flex items-end justify-between gap-3">
         <div className="flex items-center gap-2">
-          <div className="rounded-lg bg-accent-600/10 p-1.5 text-accent-600 dark:text-accent-400">
+          <div className="rounded-lg bg-zinc-900/5 p-1.5 text-zinc-700 dark:bg-white/10 dark:text-zinc-200">
             <Sparkles className="h-4 w-4" />
           </div>
           <div>
@@ -51,6 +55,16 @@ export const RecommendationRail: React.FC<RecommendationRailProps> = ({
           </div>
         </div>
 
+        <div className="flex items-center gap-3">
+        {viewAllHref && (
+          <Link
+            href={viewAllHref}
+            className="flex items-center gap-1 text-xs font-semibold text-zinc-600 transition-colors hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white"
+          >
+            Lihat semua
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        )}
         <div className="hidden gap-1.5 sm:flex">
           {(['prev', 'next'] as const).map((dir) => (
             <button
@@ -63,6 +77,7 @@ export const RecommendationRail: React.FC<RecommendationRailProps> = ({
               {dir === 'next' ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
             </button>
           ))}
+        </div>
         </div>
       </div>
 
@@ -78,12 +93,12 @@ export const RecommendationRail: React.FC<RecommendationRailProps> = ({
               onClick={() => selectTab(tab.key)}
               className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
                 active
-                  ? 'bg-accent-600 text-white shadow-sm'
+                  ? 'bg-zinc-900 text-white shadow-sm dark:bg-white dark:text-zinc-950'
                   : 'bg-zinc-200/70 text-zinc-700 hover:bg-zinc-300/70 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700'
               }`}
             >
               {tab.label}
-              <span className={`ml-1.5 text-xs font-medium ${active ? 'text-white/70' : 'text-zinc-500'}`}>
+              <span className={`ml-1.5 text-xs font-medium ${active ? 'text-white/70 dark:text-zinc-500' : 'text-zinc-500'}`}>
                 {tab.items.length}
               </span>
             </button>

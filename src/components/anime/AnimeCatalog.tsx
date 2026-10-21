@@ -123,7 +123,7 @@ export const AnimeCatalog: React.FC<AnimeCatalogProps> = ({ initialResult }) => 
       <div className="flex flex-col justify-between gap-2 border-b border-zinc-200/60 pb-4 dark:border-zinc-800/60 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-block h-6 w-1.5 rounded-full bg-accent-600" />
+            <span className="inline-block h-6 w-1.5 rounded-full bg-zinc-900 dark:bg-white" />
             <h2 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-white md:text-2xl">
               Katalog Anime
             </h2>

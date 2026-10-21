@@ -25,21 +25,22 @@
 }
 
 /*
- * Palet aksen: merah tua redup (oxblood). Dipakai lewat kelas `bg-accent-600`, `text-accent-400`,
- * `ring-accent-500/60`, dst. 600 = warna tombol/penanda utama, 400 = teks aksen di latar gelap.
+ * Palet aksen: abu-abu baja (slate) yang serasi dengan hitam, dari hitam kebiruan sampai perak.
+ * Dipakai lewat kelas `bg-accent-600`, `text-accent-400`, `ring-accent-500/60`, dst.
+ * Di mode gelap penanda aktif/tombol utama memakai putih agar kontrasnya setinggi mungkin.
  */
 @theme {
-  --color-accent-50: #fbf3f2;
-  --color-accent-100: #f6e4e2;
-  --color-accent-200: #ecc8c4;
-  --color-accent-300: #dea39d;
-  --color-accent-400: #cb7870;
-  --color-accent-500: #b4554e;
-  --color-accent-600: #98403c;
-  --color-accent-700: #7d3330;
-  --color-accent-800: #672d2d;
-  --color-accent-900: #562929;
-  --color-accent-950: #301313;
+  --color-accent-50: #f3f4f5;
+  --color-accent-100: #e3e5e7;
+  --color-accent-200: #c9cdd1;
+  --color-accent-300: #b3bdc1;
+  --color-accent-400: #9aa3a7;
+  --color-accent-500: #747d86;
+  --color-accent-600: #4d5562;
+  --color-accent-700: #3c4350;
+  --color-accent-800: #2b313b;
+  --color-accent-900: #1e232b;
+  --color-accent-950: #0b0f17;
 }
 
 /* Animasi hero: teks masuk dari bawah, dan indikator progres slide yang mengisi sendiri. */

@@ -6,16 +6,17 @@ import { ComicGrid } from '@/components/comic/ComicGrid';
 import { ContinueReadingSection } from '@/components/comic/ContinueReadingSection';
 import { PaginatedComicCatalog } from '@/components/comic/PaginatedComicCatalog';
 import { getPopularComics, getFilteredComics } from '@/services/komikService';
-import { getComicRailTabs } from '@/services/railService';
+import { getAnimeRailTabs, getComicRailTabs } from '@/services/railService';
 import { RecommendationRail } from '@/components/recommendation/RecommendationRail';
 import { Flame, Loader2 } from 'lucide-react';
 
 async function HomeComicsContent() {
   // Semua data berasal dari fungsi `use cache`: terkirim instan dari cache server.
-  const [popularComics, initialCatalog, recommendationTabs] = await Promise.all([
+  const [popularComics, initialCatalog, recommendationTabs, animeTabs] = await Promise.all([
     getPopularComics(),
     getFilteredComics({ page: 1 }),
     getComicRailTabs(),
+    getAnimeRailTabs(),
   ]);
 
   const spotlightComics =
@@ -32,8 +33,16 @@ async function HomeComicsContent() {
       )}
 
       <RecommendationRail
+        title="Rekomendasi Komik"
         description="Pilihan komik terpopuler, lengkap dengan update terbaru."
         tabs={recommendationTabs}
+      />
+
+      <RecommendationRail
+        title="Rekomendasi Anime"
+        description="Anime terbaru, berating tinggi, dan klasik pilihan, langsung bisa ditonton."
+        tabs={animeTabs}
+        viewAllHref="/anime"
       />
 
       <ContinueReadingSection />

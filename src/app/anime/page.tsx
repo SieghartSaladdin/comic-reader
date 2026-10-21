@@ -125,7 +125,7 @@ export default function AnimePage() {
               <div className="flex flex-wrap items-center justify-center gap-3 pt-1 lg:justify-start">
                 <a
                   href="#anime-grid"
-                  className="flex items-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white shadow-[0_8px_28px_rgba(152,64,60,0.45)] transition hover:-translate-y-0.5 hover:bg-accent-500"
+                  className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-zinc-950 shadow-[0_8px_28px_rgba(255,255,255,0.12)] transition hover:-translate-y-0.5 hover:bg-zinc-200"
                 >
                   <PlayCircle className="h-4 w-4" />
                   <span>Jelajahi Katalog</span>

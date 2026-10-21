@@ -5,50 +5,42 @@ interface LogoMarkProps {
 }
 
 /**
- * Lambang "Comic and Anime": balon percakapan (komik) berwarna merah tua bergradasi, berisi huruf
- * "C" dengan segitiga play di dalamnya (anime). Gambar yang sama dipakai di `app/icon.svg`.
+ * Lambang "Comic and Anime" tanpa latar: huruf "C" tebal dengan ekor balon komik (komik) dan tombol
+ * play di dalamnya (anime). Warna mengikuti `currentColor` (memudar halus ke arah kanan bawah),
+ * sehingga otomatis hitam di mode terang dan putih di mode gelap. Gambar yang sama dipakai di
+ * `app/icon.svg`.
  */
 export const LogoMark: React.FC<LogoMarkProps> = ({ className = 'h-9 w-9' }) => {
-  const uid = useId();
-  const body = `${uid}-body`;
-  const shine = `${uid}-shine`;
-  const bubble =
-    'M16 4H32A12 12 0 0 1 44 16V28A12 12 0 0 1 32 40H22L11 46L16 40A12 12 0 0 1 4 28V16A12 12 0 0 1 16 4Z';
+  const gradientId = `${useId()}-fade`;
+  const paint = `url(#${gradientId})`;
 
   return (
     <svg
-      viewBox="0 0 48 50"
+      viewBox="0 0 48 48"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
       role="img"
       aria-label="Comic and Anime"
     >
       <defs>
-        <linearGradient id={body} x1="6" y1="4" x2="42" y2="46" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#c9665d" />
-          <stop offset="0.55" stopColor="#98403c" />
-          <stop offset="1" stopColor="#5b2124" />
-        </linearGradient>
-        <linearGradient id={shine} x1="24" y1="4" x2="24" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#fff" stopOpacity="0.3" />
-          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        <linearGradient id={gradientId} x1="6" y1="4" x2="42" y2="46" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="currentColor" />
+          <stop offset="1" stopColor="currentColor" stopOpacity="0.58" />
         </linearGradient>
       </defs>
 
-      <path d={bubble} fill={`url(#${body})`} />
-      <path d={bubble} fill={`url(#${shine})`} />
-      <path d={bubble} fill="none" stroke="#fff" strokeOpacity="0.16" strokeWidth="1" />
-
       {/* Huruf C */}
       <path
-        d="M33.1 13.6A11 11 0 1 0 33.1 30.4"
+        d="M32.6 13.4A15 15 0 1 0 32.6 34.6"
         fill="none"
-        stroke="#fff"
-        strokeWidth="4.4"
+        stroke={paint}
+        strokeWidth="6.5"
         strokeLinecap="round"
       />
+      {/* Ekor balon komik di kiri bawah */}
+      <path d="M9.5 35.5L5.5 45L16.5 41Z" fill={paint} stroke={paint} strokeWidth="2" strokeLinejoin="round" />
       {/* Tombol play di dalam C */}
-      <path d="M24 16.6V27.4L32.6 22Z" fill="#fff" stroke="#fff" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M20 17.5V30.5L31.5 24Z" fill={paint} stroke={paint} strokeWidth="2.4" strokeLinejoin="round" />
     </svg>
   );
 };
@@ -67,12 +59,12 @@ export const Logo: React.FC<LogoProps> = ({
   showTagline = false,
   markClassName = 'h-9 w-9',
 }) => (
-  <span className="inline-flex items-center gap-2.5">
-    <LogoMark className={`${markClassName} shrink-0 drop-shadow-[0_4px_10px_rgba(152,64,60,0.35)]`} />
+  <span className="inline-flex items-center gap-2.5 text-zinc-950 dark:text-white">
+    <LogoMark className={`${markClassName} shrink-0`} />
     {showWordmark && (
       <span className="flex flex-col leading-none">
-        <span className="text-[15px] font-extrabold tracking-tight text-zinc-900 dark:text-white">
-          Comic<span className="mx-0.5 text-accent-600 dark:text-accent-400">&amp;</span>Anime
+        <span className="text-[15px] font-extrabold tracking-tight">
+          Comic<span className="mx-0.5 text-zinc-400 dark:text-zinc-500">&amp;</span>Anime
         </span>
         {showTagline && (
           <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.22em] text-zinc-500 dark:text-zinc-400">

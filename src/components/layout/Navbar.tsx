@@ -93,7 +93,7 @@ const NavbarContent: React.FC<{ pathname: string | null }> = ({ pathname }) => {
                       aria-current={active ? 'page' : undefined}
                       className={`relative flex items-center gap-2 rounded-full px-4 py-1.5 text-[13px] font-medium transition-all ${
                         active
-                          ? 'bg-accent-600 text-white shadow-[0_2px_12px_rgba(152,64,60,0.4)]'
+                          ? 'bg-zinc-900 text-white shadow-[0_2px_12px_rgba(0,0,0,0.3)] dark:bg-white dark:text-zinc-950'
                           : 'text-zinc-600 hover:bg-white hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[0.07] dark:hover:text-white'
                       }`}
                     >
@@ -102,7 +102,7 @@ const NavbarContent: React.FC<{ pathname: string | null }> = ({ pathname }) => {
                       {badge !== null && (
                         <span
                           className={`rounded-full px-1.5 text-[10px] font-bold leading-4 ${
-                            active ? 'bg-white/25 text-white' : 'bg-accent-600 text-white'
+                            active ? 'bg-white/25 text-white dark:bg-black/15 dark:text-zinc-950' : 'bg-accent-600 text-white'
                           }`}
                         >
                           {badge}
@@ -160,7 +160,7 @@ const NavbarContent: React.FC<{ pathname: string | null }> = ({ pathname }) => {
         {/* Garis aksen tipis di tepi bawah */}
         <div
           aria-hidden="true"
-          className="h-px bg-gradient-to-r from-transparent via-accent-600/50 to-transparent"
+          className="h-px bg-gradient-to-r from-transparent via-accent-400/40 to-transparent"
         />
       </header>
 

@@ -93,7 +93,7 @@ export const AnimeCatalogFilters: React.FC<AnimeCatalogFiltersProps> = ({
               disabled={statusDisabled}
               className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors ${
                 active
-                  ? 'bg-accent-600 text-white shadow-sm'
+                  ? 'bg-zinc-900 text-white shadow-sm dark:bg-white dark:text-zinc-950'
                   : 'cursor-pointer bg-zinc-200/70 text-zinc-700 hover:bg-zinc-300/70 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700'
               } disabled:cursor-not-allowed disabled:opacity-40`}
             >
