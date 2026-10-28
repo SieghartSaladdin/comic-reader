@@ -41,8 +41,8 @@ export const PaginatedComicCatalog: React.FC<PaginatedComicCatalogProps> = ({
   initialPage = 1,
   initialTotalPages = 10,
   initialHasNextPage = true,
-  title = 'Katalog Komik Lengkap',
-  subtitle = 'Jelajahi ribuan manga, manhwa, dan manhua dengan multi-filter genre, tipe, status, dan urutan terjemahan Indonesia',
+  title = 'Katalog Komik',
+  subtitle = 'Saring manga, manhwa, dan manhua berdasarkan genre, tipe, status, dan urutan.',
 }) => {
   const [comics, setComics] = useState<ComicListItem[]>(initialComics);
   const [page, setPage] = useState<number>(initialPage);
@@ -169,14 +169,11 @@ export const PaginatedComicCatalog: React.FC<PaginatedComicCatalogProps> = ({
       {/* Title Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-zinc-200/60 dark:border-zinc-800/60 pb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-6 rounded-full bg-zinc-950 dark:bg-white inline-block" />
-            <h2 className="text-xl md:text-2xl font-bold text-zinc-950 dark:text-white tracking-tight">
-              {title}
-            </h2>
-          </div>
+          <h2 className="text-xl md:text-2xl font-bold text-zinc-950 dark:text-white tracking-tight">
+            {title}
+          </h2>
           {subtitle && (
-            <p className="text-xs md:text-sm text-zinc-500 dark:text-zinc-400 mt-1 pl-3.5">
+            <p className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 mt-1">
               {subtitle}
             </p>
           )}

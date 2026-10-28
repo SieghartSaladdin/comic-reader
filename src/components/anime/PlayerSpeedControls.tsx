@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Zap, Gauge } from 'lucide-react';
+import { Gauge } from 'lucide-react';
 
 interface PlayerSpeedControlsProps {
   currentSpeed: number;
@@ -46,20 +46,16 @@ export const PlayerSpeedControls: React.FC<PlayerSpeedControlsProps> = ({
         </div>
 
         {isHoldingSpeed && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white text-zinc-950 dark:bg-white dark:text-zinc-950 font-bold text-[10px] animate-pulse">
-            <Zap className="w-3 h-3 fill-current" />
-            2x Aktif
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white text-zinc-950 dark:bg-white dark:text-zinc-950 font-bold text-[10px]">
+            2x aktif
           </span>
         )}
       </div>
 
       {/* Hint Tooltip / Info */}
-      <div className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400 text-[11px]">
-        <Zap className="w-3 h-3 text-zinc-400 shrink-0" />
-        <span>
-          Tekan &amp; tahan klik mouse pada video untuk <strong>2x speed</strong>
-        </span>
-      </div>
+      <p className="text-zinc-500 dark:text-zinc-400 text-[11px]">
+        Tahan klik mouse pada video untuk memutar 2x lebih cepat.
+      </p>
     </div>
   );
 };

@@ -37,18 +37,19 @@ async function ComicDetailLoader({ idPromise }: { idPromise: Promise<{ id: strin
 
   if (!comic) {
     return (
-      <div className="py-20 text-center rounded-3xl bg-white dark:bg-[#121214] border border-zinc-200 dark:border-zinc-800 p-8 space-y-4 shadow-xs">
-        <BookX className="w-10 h-10 mx-auto text-zinc-400" />
-        <h2 className="text-lg sm:text-xl font-bold text-zinc-950 dark:text-white">Komik Tidak Ditemukan</h2>
-        <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-md mx-auto">
-          Komik dengan slug &quot;{id}&quot; tidak ditemukan atau sedang mengalami gangguan jaringan saat memuat dari KomikIndo.
+      <div className="py-16 text-center rounded-2xl bg-white dark:bg-[#121214] border border-zinc-200 dark:border-zinc-800 p-8 space-y-3">
+        <BookX className="w-10 h-10 mx-auto text-zinc-500" />
+        <h2 className="text-lg sm:text-xl font-bold text-zinc-950 dark:text-white">Komik tidak ditemukan</h2>
+        <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-md mx-auto">
+          Komik &quot;{id}&quot; tidak ada di sumber, atau sumbernya sedang tidak bisa dihubungi.
+          Muat ulang halaman ini nanti, atau pilih komik lain dari katalog.
         </p>
         <div className="pt-2">
           <Link
             href="/"
-            className="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-black text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-xs font-semibold shadow-xs transition-all inline-block"
+            className="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-black text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-xs font-semibold transition-colors inline-block"
           >
-            Jelajahi Komik Lain
+            Kembali ke katalog komik
           </Link>
         </div>
       </div>

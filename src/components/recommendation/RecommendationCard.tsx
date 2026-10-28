@@ -47,7 +47,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ item }) 
       <div className="absolute top-1.5 left-1.5 right-1.5 flex items-start justify-between gap-1 z-10">
         <div className="flex items-center gap-1">
           {item.timeAgo && (
-            <span className="inline-flex items-center gap-1 rounded-md bg-black/65 backdrop-blur-sm pl-1 pr-1.5 py-0.5 text-[10px] font-semibold text-white">
+            <span className="inline-flex items-center gap-1 rounded-md bg-black/65 pl-1 pr-1.5 py-0.5 text-[10px] font-semibold text-white">
               <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-accent-600">
                 <Clock className="h-2.5 w-2.5" />
               </span>
@@ -76,7 +76,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({ item }) 
 
       {/* Chip chapter/episode terbaru, selalu terlihat */}
       {item.latestLabel && (
-        <span className="absolute bottom-1.5 left-1.5 z-10 rounded-md bg-black/65 backdrop-blur-sm px-1.5 py-0.5 text-[10px] font-bold text-white transition-opacity duration-200 group-hover:opacity-0">
+        <span className="absolute bottom-1.5 left-1.5 z-10 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-bold text-white transition-opacity duration-200 group-hover:opacity-0">
           {item.latestLabel}
         </span>
       )}

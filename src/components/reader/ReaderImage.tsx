@@ -70,7 +70,7 @@ export const ReaderImage: React.FC<ReaderImageProps> = ({
     >
       {/* Loading Skeleton Indicator */}
       {isLoading && !showError && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/60 backdrop-blur-sm text-zinc-400 z-10 transition-opacity">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-zinc-900/80 text-zinc-300 z-10 transition-opacity">
           <Loader2 className="w-8 h-8 animate-spin text-accent-500 mb-2" />
           <span className="text-xs font-medium tracking-wider">Memuat Halaman {page.pageNumber}...</span>
         </div>
@@ -78,7 +78,7 @@ export const ReaderImage: React.FC<ReaderImageProps> = ({
 
       {/* Error Fallback */}
       {showError ? (
-        <div className="flex flex-col items-center justify-center p-8 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-300 max-w-md my-8 shadow-lg">
+        <div className="flex flex-col items-center justify-center p-8 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-300 max-w-md my-8">
           <ImageOff className="w-12 h-12 text-rose-500 mb-3" />
           <p className="text-sm font-semibold mb-1">Gagal memuat Halaman {page.pageNumber}</p>
           <p className="text-xs text-zinc-400 mb-4 text-center">

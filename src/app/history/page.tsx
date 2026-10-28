@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import {
-  History,
   Trash2,
   Play,
   Clock,
@@ -75,16 +74,11 @@ export default function HistoryPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-200 dark:border-zinc-800">
           <div>
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300 dark:border-zinc-700">
-                <History className="w-5 h-5" />
-              </div>
-              <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-950 dark:text-white tracking-tight">
-                Riwayat Membaca
-              </h1>
-            </div>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-              Lanjutkan membaca dari chapter dan halaman terakhir yang Anda kunjungi.
+            <h1 className="text-2xl md:text-3xl font-extrabold text-zinc-950 dark:text-white tracking-tight">
+              Riwayat Membaca
+            </h1>
+            <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">
+              Chapter dan halaman terakhir yang Anda buka. Riwayat tersimpan di browser ini.
             </p>
           </div>
 
@@ -140,7 +134,7 @@ export default function HistoryPage() {
                   {/* Comic Details */}
                   <div className="min-w-0 flex-1 space-y-1.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 uppercase tracking-widest">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 uppercase tracking-wider">
                         {item.readingMode}
                       </span>
                       <span className="text-[11px] text-zinc-500 dark:text-zinc-400 flex items-center gap-1">
@@ -191,6 +185,7 @@ export default function HistoryPage() {
                     onClick={() => handleRemoveItem(item.comicId)}
                     className="p-2 text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-colors cursor-pointer"
                     title="Hapus dari riwayat"
+                    aria-label={`Hapus ${item.comicTitle} dari riwayat`}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -200,24 +195,25 @@ export default function HistoryPage() {
           </div>
         ) : (
           mounted && (
-            <div className="py-20 text-center rounded-3xl bg-zinc-50 dark:bg-[#121214] border border-dashed border-zinc-200 dark:border-zinc-800 p-8 space-y-4">
-              <div className="w-12 h-12 mx-auto rounded-2xl bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300">
-                <History className="w-6 h-6" />
-              </div>
-              <h2 className="text-lg sm:text-xl font-bold text-zinc-950 dark:text-white">Belum Ada Riwayat Membaca</h2>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto">
+            <div className="py-16 text-center rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-800 p-8 space-y-3">
+              <h2 className="text-lg sm:text-xl font-bold text-zinc-950 dark:text-white">
+                {searchQuery ? 'Tidak ada yang cocok' : 'Belum ada riwayat'}
+              </h2>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-sm mx-auto">
                 {searchQuery
-                  ? `Tidak ditemukan komik dengan kata kunci "${searchQuery}".`
-                  : 'Komik yang Anda buka dan baca akan otomatis tercatat di sini sehingga Anda dapat melanjutkan kapan saja.'}
+                  ? `Tidak ada riwayat dengan kata kunci "${searchQuery}". Coba judul atau nomor chapter lain.`
+                  : 'Buka satu chapter dan halaman terakhir yang Anda baca langsung tercatat di sini.'}
               </p>
-              <div className="pt-2">
-                <Link
-                  href="/"
-                  className="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-black text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-xs font-semibold shadow-xs transition-all inline-block"
-                >
-                  Mulai Membaca Sekarang
-                </Link>
-              </div>
+              {!searchQuery && (
+                <div className="pt-2">
+                  <Link
+                    href="/"
+                    className="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-black text-white dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-xs font-semibold transition-colors inline-block"
+                  >
+                    Pilih komik di katalog
+                  </Link>
+                </div>
+              )}
             </div>
           )
         )}

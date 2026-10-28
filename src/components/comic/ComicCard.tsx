@@ -136,7 +136,7 @@ export const ComicCard: React.FC<ComicCardProps> = ({ comic }) => {
 
         {/* Top Badges */}
         <div className="absolute top-2 left-2 flex flex-col gap-1 items-start z-10 pointer-events-none">
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-md uppercase tracking-wider text-white bg-black/55 border border-white/20">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider text-white bg-black/55 border border-white/20">
             {comic.type}
           </span>
           {comic.updatedChapterCount && comic.updatedChapterCount > 1 && (
@@ -150,7 +150,7 @@ export const ComicCard: React.FC<ComicCardProps> = ({ comic }) => {
         <button
           onClick={toggleBookmark}
           aria-label={bookmarked ? 'Hapus bookmark' : 'Tambah bookmark'}
-          className={`absolute top-2 right-2 z-20 p-2 rounded-xl backdrop-blur-md transition-all cursor-pointer ${
+          className={`absolute top-2 right-2 z-20 p-2 rounded-xl transition-all cursor-pointer ${
             bookmarked
               ? 'bg-white text-zinc-950 hover:bg-zinc-200 shadow-sm'
               : 'bg-black/50 text-white/80 hover:bg-black/80 hover:text-white'
@@ -161,12 +161,12 @@ export const ComicCard: React.FC<ComicCardProps> = ({ comic }) => {
 
         {/* Bottom Cover Info */}
         <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-xs z-10">
-          <span className="flex items-center gap-1 font-semibold text-white bg-black/60 backdrop-blur-md px-1.5 py-0.5 rounded-md text-[11px] border border-white/10">
+          <span className="flex items-center gap-1 font-semibold text-white bg-black/60 px-1.5 py-0.5 rounded-md text-[11px] border border-white/10">
             <Star className="w-3 h-3 fill-white text-white" />
             {(comic.rating || 8.0).toFixed(1)}
           </span>
           {comic.status && (
-            <span className="text-[10px] bg-black/60 backdrop-blur-md text-white/90 px-1.5 py-0.5 rounded-md font-medium border border-white/10">
+            <span className="text-[10px] bg-black/60 text-white/90 px-1.5 py-0.5 rounded-md font-medium border border-white/10">
               {comic.status}
             </span>
           )}

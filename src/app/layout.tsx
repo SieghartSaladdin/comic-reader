@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Comic and Anime - Baca Komik & Nonton Anime Sub Indo',
-  description: 'Baca komik webtoon, manga, dan manhwa serta nonton anime subtitle Indonesia dalam satu tempat dengan pengalaman visual minimalis dan elegan.',
+  description: 'Baca webtoon, manga, dan manhwa serta nonton anime subtitle Indonesia di satu situs. Bookmark dan riwayat bacaan tersimpan di browser Anda.',
 };
 
 export default function RootLayout({

@@ -55,7 +55,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ comics }) => {
     <section
       aria-roledescription="carousel"
       aria-label="Komik populer"
-      className="relative isolate w-full overflow-hidden rounded-3xl bg-[#0d0a0a] text-white shadow-xl ring-1 ring-black/5 dark:ring-white/10"
+      className="relative isolate w-full overflow-hidden rounded-2xl bg-[#0d0a0a] text-white ring-1 ring-black/5 dark:ring-white/10"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onFocus={() => setIsPaused(true)}
@@ -82,12 +82,11 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ comics }) => {
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0d0a0a] via-[#0d0a0a]/85 to-[#0d0a0a]/30" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0d0a0a] via-transparent to-[#0d0a0a]/40" />
-        <div className="absolute -left-24 -top-28 h-80 w-80 rounded-full bg-accent-700/30 blur-3xl" />
       </div>
 
       {/* Layar kecil: poster mini miring di pojok kanan atas */}
       {comics[index].coverImage?.trim() && (
-        <div className="absolute right-5 top-9 z-10 aspect-[3/4] w-24 rotate-3 overflow-hidden rounded-xl shadow-[0_14px_30px_rgba(0,0,0,0.55)] ring-1 ring-white/20 sm:hidden">
+        <div className="absolute right-5 top-9 z-10 aspect-[3/4] w-24 overflow-hidden rounded-lg ring-1 ring-white/20 sm:hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             key={comics[index].slug || comics[index].id}
@@ -151,7 +150,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ comics }) => {
               type="button"
               onClick={() => goTo(index - 1)}
               aria-label="Slide sebelumnya"
-              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur transition hover:bg-white/20"
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-white/15 ring-1 ring-white/20 transition-colors hover:bg-white/25"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -159,7 +158,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ comics }) => {
               type="button"
               onClick={() => goTo(index + 1)}
               aria-label="Slide berikutnya"
-              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur transition hover:bg-white/20"
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-white/15 ring-1 ring-white/20 transition-colors hover:bg-white/25"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

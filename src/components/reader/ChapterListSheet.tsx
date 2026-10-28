@@ -67,7 +67,7 @@ export const ChapterListSheet: React.FC<ChapterListSheetProps> = ({
   return (
     <div
       {...{ [READER_BAR_ATTR]: '' }}
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-6"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 sm:items-center sm:p-6"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -75,7 +75,7 @@ export const ChapterListSheet: React.FC<ChapterListSheetProps> = ({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[80dvh] w-full max-w-2xl flex-col rounded-t-3xl border border-zinc-800 bg-zinc-950 text-zinc-100 shadow-2xl sm:rounded-3xl"
+        className="flex max-h-[80dvh] w-full max-w-2xl flex-col rounded-t-3xl border border-zinc-800 bg-zinc-950 text-zinc-100 sm:rounded-3xl"
       >
         <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-3">
           <div>

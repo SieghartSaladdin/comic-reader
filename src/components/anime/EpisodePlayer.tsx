@@ -136,7 +136,7 @@ export const EpisodePlayer: React.FC<EpisodePlayerProps> = ({
       >
         {/* Loading Overlay */}
         {isLoading && activeUrl && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/85 backdrop-blur-sm text-zinc-300 space-y-2 pointer-events-none">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/85 text-zinc-300 space-y-2 pointer-events-none">
             <Loader2 className="w-8 h-8 text-white animate-spin" />
             <p className="text-xs font-medium tracking-wide">Menghubungkan pemutar video...</p>
           </div>
@@ -144,9 +144,8 @@ export const EpisodePlayer: React.FC<EpisodePlayerProps> = ({
 
         {/* Floating Hold 2x Badge */}
         {isHoldingSpeed && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-950/90 text-white border border-white/20 backdrop-blur-md shadow-2xl text-xs font-semibold pointer-events-none animate-in fade-in zoom-in-95 duration-150">
-            <span className="text-sm">⏩</span>
-            <span>2x Speed</span>
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-4 py-1.5 rounded-lg bg-zinc-950 text-white border border-white/20 text-xs font-semibold pointer-events-none animate-in fade-in duration-150">
+            <span>2x aktif</span>
           </div>
         )}
 
@@ -184,7 +183,7 @@ export const EpisodePlayer: React.FC<EpisodePlayerProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               title="Buka Langsung di Tab Baru"
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-black/75 hover:bg-black text-zinc-200 hover:text-white backdrop-blur-md border border-white/10 text-xs font-medium transition-all"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-black/75 hover:bg-black text-zinc-200 hover:text-white border border-white/10 text-xs font-medium transition-colors"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Tab Baru</span>
@@ -193,14 +192,14 @@ export const EpisodePlayer: React.FC<EpisodePlayerProps> = ({
           <button
             onClick={handleReload}
             title="Segarkan Video"
-            className="p-2 rounded-xl bg-black/75 hover:bg-black text-zinc-200 hover:text-white backdrop-blur-md border border-white/10 transition-all text-xs cursor-pointer"
+            className="p-2 rounded-xl bg-black/75 hover:bg-black text-zinc-200 hover:text-white border border-white/10 transition-colors text-xs cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => setIsTheatreMode(!isTheatreMode)}
             title="Mode Teater"
-            className={`p-2 rounded-xl backdrop-blur-md border border-white/10 transition-all text-xs cursor-pointer ${
+            className={`p-2 rounded-xl border border-white/10 transition-colors text-xs cursor-pointer ${
               isTheatreMode
                 ? 'bg-white text-zinc-950 font-bold'
                 : 'bg-black/75 hover:bg-black text-zinc-200 hover:text-white'

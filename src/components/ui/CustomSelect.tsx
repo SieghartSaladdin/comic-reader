@@ -163,7 +163,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 sm:right-auto sm:min-w-[220px] max-w-xs mt-1.5 z-50 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-[#121214]/95 backdrop-blur-md shadow-xl p-1.5 animate-in fade-in zoom-in-95 duration-100">
+        <div className="absolute left-0 right-0 sm:right-auto sm:min-w-[220px] max-w-xs mt-1.5 z-50 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#121214] shadow-lg p-1.5 animate-in fade-in zoom-in-95 duration-100">
           <SelectOptionList
             options={filteredOptions}
             selectedValues={selectedValues}

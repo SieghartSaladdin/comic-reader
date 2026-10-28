@@ -13,7 +13,7 @@ interface MobileTabBarProps {
 export const MobileTabBar: React.FC<MobileTabBarProps> = ({ pathname, bookmarkCount }) => (
   <nav
     aria-label="Navigasi utama"
-    className="fixed inset-x-0 bottom-0 z-40 border-t border-zinc-200/80 bg-white/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl dark:border-white/[0.07] dark:bg-[#0b0b0d]/90 md:hidden"
+    className="fixed inset-x-0 bottom-0 z-40 border-t border-zinc-200 bg-white pb-[env(safe-area-inset-bottom)] dark:border-zinc-800 dark:bg-[#0b0b0d] md:hidden"
   >
     <ul className="mx-auto grid max-w-md grid-cols-4">
       {NAV_ITEMS.map((item) => {

@@ -21,8 +21,8 @@ export const INJECTED_PLAYER_SCRIPT = `
 
   var badge = document.createElement('div');
   badge.id = 'stream-player-speed-badge';
-  badge.innerHTML = '<span style="font-size: 14px;">⏩</span><span>2x Speed</span>';
-  badge.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:2147483647;display:none;align-items:center;gap:8px;background:rgba(18,18,20,0.92);color:#ffffff;padding:6px 16px;border-radius:9999px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:13px;font-weight:600;letter-spacing:0.02em;border:1px solid rgba(255,255,255,0.15);box-shadow:0 8px 30px rgba(0,0,0,0.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);pointer-events:none;user-select:none;transition:opacity 0.15s ease;';
+  badge.innerHTML = '<span>2x aktif</span>';
+  badge.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:2147483647;display:none;align-items:center;gap:8px;background:#121214;color:#ffffff;padding:6px 14px;border-radius:8px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,0.2);pointer-events:none;user-select:none;transition:opacity 0.15s ease;';
 
   function attachBadge() {
     if (document.body && !document.body.contains(badge)) document.body.appendChild(badge);
@@ -30,7 +30,7 @@ export const INJECTED_PLAYER_SCRIPT = `
 
   function showBadge(text, autoHideDuration) {
     attachBadge();
-    if (text) badge.innerHTML = '<span style="font-size: 14px;">⏩</span><span>' + text + '</span>';
+    if (text) badge.innerHTML = '<span>' + text + '</span>';
     badge.style.display = 'flex';
     badge.style.opacity = '1';
     if (hideBadgeTimer) { clearTimeout(hideBadgeTimer); hideBadgeTimer = null; }

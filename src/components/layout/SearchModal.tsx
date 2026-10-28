@@ -84,9 +84,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4 bg-black/60 animate-in fade-in duration-200">
       <div
-        className="w-full max-w-2xl bg-white dark:bg-[#121214] border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[80vh] transition-colors duration-200"
+        className="w-full max-w-2xl bg-white dark:bg-[#121214] border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden flex flex-col max-h-[80vh] transition-colors duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input Bar */}

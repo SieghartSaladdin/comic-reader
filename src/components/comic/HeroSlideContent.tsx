@@ -31,27 +31,27 @@ export const HeroSlideContent: React.FC<HeroSlideContentProps> = ({ comic, posit
           <span className="text-white/30">/ {total}</span>
         </div>
 
-        <h1 className="line-clamp-3 text-3xl font-black leading-[1.05] tracking-tight text-white drop-shadow-sm sm:line-clamp-2 sm:text-5xl lg:text-6xl">
+        <h1 className="line-clamp-3 text-3xl font-black leading-[1.05] tracking-tight text-white sm:line-clamp-2 sm:text-5xl lg:text-6xl">
           {comic.title}
         </h1>
 
       <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-        <span className="rounded-full bg-white px-3 py-1 uppercase tracking-widest text-zinc-950">
+        <span className="rounded-md bg-white px-2.5 py-1 uppercase tracking-wider text-zinc-950">
           {comic.type}
         </span>
         {rating !== null && (
-          <span className="flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-amber-300 ring-1 ring-white/10 backdrop-blur">
+          <span className="flex items-center gap-1 rounded-md bg-white/15 px-2.5 py-1 text-amber-300 ring-1 ring-white/15">
             <Star className="h-3 w-3 fill-current" />
             {rating.toFixed(1)}
           </span>
         )}
         {comic.status && (
-          <span className="rounded-full bg-white/10 px-3 py-1 text-white/80 ring-1 ring-white/10 backdrop-blur">
+          <span className="rounded-md bg-white/15 px-2.5 py-1 text-white/90 ring-1 ring-white/15">
             {comic.status}
           </span>
         )}
         {comic.updatedTime && (
-          <span className="flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-white/80 ring-1 ring-white/10 backdrop-blur">
+          <span className="flex items-center gap-1 rounded-md bg-white/15 px-2.5 py-1 text-white/90 ring-1 ring-white/15">
             <Clock className="h-3 w-3" />
             {comic.updatedTime}
           </span>
@@ -68,7 +68,7 @@ export const HeroSlideContent: React.FC<HeroSlideContentProps> = ({ comic, posit
               <li key={chapter.slug}>
                 <Link
                   href={`/reader/${key}/${chapter.slug}`}
-                  className="flex items-center gap-2 rounded-xl bg-black/30 px-3 py-2 text-xs ring-1 ring-white/10 backdrop-blur transition hover:bg-black/50"
+                  className="flex items-center gap-2 rounded-lg bg-black/40 px-3 py-2 text-xs ring-1 ring-white/10 transition-colors hover:bg-black/60"
                 >
                   <span className="font-bold text-white">{chapter.title}</span>
                   <span className="text-white/55">{chapter.releaseTime}</span>
@@ -82,14 +82,14 @@ export const HeroSlideContent: React.FC<HeroSlideContentProps> = ({ comic, posit
       <div className="flex flex-wrap items-center gap-3 pt-1">
         <Link
           href={readUrl}
-          className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-zinc-950 shadow-[0_8px_28px_rgba(255,255,255,0.12)] transition hover:-translate-y-0.5 hover:bg-zinc-200 active:translate-y-0"
+          className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-zinc-950 transition-colors hover:bg-zinc-200"
         >
           <Play className="h-4 w-4 fill-current" />
           {comic.latestChapter ? `Baca ${comic.latestChapter}` : 'Mulai Membaca'}
         </Link>
         <Link
           href={`/comic/${key}`}
-          className="flex items-center gap-2 rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/15 backdrop-blur transition hover:bg-white/20"
+          className="flex items-center gap-2 rounded-lg bg-white/15 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/20 transition-colors hover:bg-white/25"
         >
           <Info className="h-4 w-4" />
           Detail Komik

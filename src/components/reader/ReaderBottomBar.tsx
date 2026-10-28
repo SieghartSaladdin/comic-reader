@@ -62,7 +62,7 @@ export const ReaderBottomBar: React.FC<ReaderBottomBarProps> = ({
         {...{ [READER_BAR_ATTR]: '' }}
         onClick={(e) => e.stopPropagation()}
         aria-hidden={!isVisible}
-        className={`fixed bottom-0 left-0 right-0 z-40 border-t border-zinc-800 bg-zinc-950/90 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-zinc-100 shadow-2xl backdrop-blur-md transition-transform duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 z-40 border-t border-zinc-800 bg-zinc-950 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] text-zinc-100 transition-transform duration-300 ${
           isVisible ? 'translate-y-0' : 'pointer-events-none translate-y-full'
         }`}
       >
@@ -73,7 +73,7 @@ export const ReaderBottomBar: React.FC<ReaderBottomBarProps> = ({
               <p className="truncate text-[11px] text-zinc-500">{comicTitle}</p>
               <p className="truncate text-sm font-semibold">
                 Chapter {chapterNumber}
-                {descriptiveChapterTitle(chapterTitle) ? ` — ${descriptiveChapterTitle(chapterTitle)}` : ''}
+                {descriptiveChapterTitle(chapterTitle) ? `: ${descriptiveChapterTitle(chapterTitle)}` : ''}
               </p>
             </div>
             {totalPages > 0 && (
