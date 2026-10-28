@@ -2,14 +2,24 @@
 
 Pembaca komik dan pemutar anime sub Indo berbasis Next.js. Daftar komik diambil dari komikindo.ch, daftar anime dari otakudesu.blog. Bookmark dan riwayat bacaan disimpan di browser, tanpa akun.
 
-![Beranda: hero komik populer dan rekomendasi](docs/screenshots/home.webp)
-
-<p>
-  <img src="docs/screenshots/anime.webp" alt="Halaman anime: hero dan rekomendasi per genre" width="62%">
-  <img src="docs/screenshots/home-mobile.webp" alt="Beranda di layar 390 px dengan tab bar bawah" width="22%">
+<p align="center">
+  <img src="docs/screenshots/home.webp" alt="Beranda: hero komik populer dan rekomendasi" width="100%">
 </p>
 
-Semua sampul dan judul pada screenshot adalah milik pemegang hak ciptanya masing-masing.
+<table>
+  <tr>
+    <td align="center" valign="bottom">
+      <img src="docs/screenshots/anime.webp" alt="Halaman anime: hero dan rekomendasi per genre" height="400"><br>
+      <sub>Halaman anime</sub>
+    </td>
+    <td align="center" valign="bottom">
+      <img src="docs/screenshots/home-mobile.webp" alt="Beranda di layar 390 px dengan tab bar bawah" height="400"><br>
+      <sub>Beranda di layar 390 px</sub>
+    </td>
+  </tr>
+</table>
+
+<sub>Semua sampul dan judul pada screenshot adalah milik pemegang hak ciptanya masing-masing.</sub>
 
 ## Fitur
 
