@@ -65,11 +65,12 @@ const NavbarContent: React.FC<{ pathname: string | null }> = ({ pathname }) => {
   }, []);
 
   const iconButton =
-    'flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 bg-white/70 text-zinc-700 transition-all hover:border-zinc-300 hover:bg-white hover:text-zinc-950 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:bg-white/[0.09] dark:hover:text-white cursor-pointer';
+    'flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-950 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-white cursor-pointer';
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-zinc-200/70 bg-white/80 backdrop-blur-xl transition-colors duration-200 dark:border-white/[0.06] dark:bg-[#09090b]/80">
+      {/* Satu-satunya elemen berkaca: header menempel di atas konten yang bergulir di bawahnya. */}
+      <header className="sticky top-0 z-40 w-full border-b border-zinc-200 bg-white/90 backdrop-blur-md transition-colors duration-200 dark:border-zinc-800 dark:bg-[#09090b]/90">
         <div className="mx-auto grid h-16 max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-3 px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <Link href="/" className="group shrink-0" aria-label="Comic and Anime - beranda">
@@ -78,9 +79,9 @@ const NavbarContent: React.FC<{ pathname: string | null }> = ({ pathname }) => {
             </span>
           </Link>
 
-          {/* Navigasi desktop: pil di tengah */}
+          {/* Navigasi desktop: segmen di tengah */}
           <nav aria-label="Navigasi utama" className="hidden justify-center md:flex">
-            <ul className="flex items-center gap-1 rounded-full border border-zinc-200 bg-zinc-100/70 p-1 dark:border-white/[0.07] dark:bg-white/[0.04]">
+            <ul className="flex items-center gap-1 rounded-xl border border-zinc-200 bg-zinc-100 p-1 dark:border-zinc-800 dark:bg-zinc-900">
               {NAV_ITEMS.map((item) => {
                 const Icon = item.icon;
                 const active = isNavItemActive(item, pathname);
@@ -91,10 +92,10 @@ const NavbarContent: React.FC<{ pathname: string | null }> = ({ pathname }) => {
                     <Link
                       href={item.href}
                       aria-current={active ? 'page' : undefined}
-                      className={`relative flex items-center gap-2 rounded-full px-4 py-1.5 text-[13px] font-medium transition-all ${
+                      className={`relative flex items-center gap-2 rounded-lg px-4 py-1.5 text-[13px] font-medium transition-colors ${
                         active
-                          ? 'bg-zinc-900 text-white shadow-[0_2px_12px_rgba(0,0,0,0.3)] dark:bg-white dark:text-zinc-950'
-                          : 'text-zinc-600 hover:bg-white hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-white/[0.07] dark:hover:text-white'
+                          ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-950'
+                          : 'text-zinc-600 hover:bg-white hover:text-zinc-950 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white'
                       }`}
                     >
                       <Icon className="h-3.5 w-3.5" />
@@ -122,7 +123,7 @@ const NavbarContent: React.FC<{ pathname: string | null }> = ({ pathname }) => {
               type="button"
               onClick={() => setIsSearchOpen(true)}
               aria-label="Cari judul"
-              className="hidden h-10 w-56 cursor-pointer items-center gap-2.5 rounded-full border border-zinc-200 bg-white/70 px-4 text-[13px] text-zinc-500 transition-all hover:border-zinc-300 hover:bg-white dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-zinc-400 dark:hover:bg-white/[0.08] md:flex lg:w-64"
+              className="hidden h-10 w-56 cursor-pointer items-center gap-2.5 rounded-lg border border-zinc-200 bg-white px-4 text-[13px] text-zinc-600 transition-colors hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-zinc-700 md:flex lg:w-64"
             >
               <Search className="h-4 w-4 shrink-0" />
               <span className="flex-1 truncate text-left">Cari komik...</span>
@@ -156,12 +157,6 @@ const NavbarContent: React.FC<{ pathname: string | null }> = ({ pathname }) => {
             </button>
           </div>
         </div>
-
-        {/* Garis aksen tipis di tepi bawah */}
-        <div
-          aria-hidden="true"
-          className="h-px bg-gradient-to-r from-transparent via-accent-400/40 to-transparent"
-        />
       </header>
 
       <MobileTabBar pathname={pathname} bookmarkCount={bookmarkCount} />

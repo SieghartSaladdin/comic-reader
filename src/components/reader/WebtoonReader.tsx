@@ -129,7 +129,7 @@ export const WebtoonReader: React.FC<WebtoonReaderProps> = ({
       </div>
 
       {/* End of Chapter Section */}
-      <div className="w-full max-w-xl mx-auto my-12 px-4 py-8 bg-zinc-900/90 border border-zinc-800 rounded-2xl flex flex-col items-center text-center shadow-2xl backdrop-blur-md">
+      <div className="w-full max-w-xl mx-auto my-12 px-4 py-8 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center text-center">
         <div className="w-12 h-12 rounded-full bg-zinc-800 text-white border border-zinc-700 flex items-center justify-center mb-3">
           <CheckCircle2 className="w-6 h-6" />
         </div>

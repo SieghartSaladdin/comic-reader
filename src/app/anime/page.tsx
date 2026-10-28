@@ -6,13 +6,13 @@ import { getOngoingAnime } from '@/services/animeService';
 import { getAnimeCatalog } from '@/services/animeCatalogService';
 import { getAnimeRailTabs } from '@/services/railService';
 import { RecommendationRail } from '@/components/recommendation/RecommendationRail';
-import { Tv, PlayCircle } from 'lucide-react';
+import { PlayCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Nonton Anime Sub Indo Terlengkap | Comic and Anime',
+  title: 'Nonton Anime Sub Indo | Comic and Anime',
   description:
-    'Streaming anime subtitle Indonesia gratis update setiap hari dengan antarmuka minimalis elegan.',
+    'Nonton anime ongoing dan tamat dengan subtitle Indonesia. Pilih server pemutar dan atur kecepatan putar.',
 };
 
 /** Tiga kartu anime ongoing di sisi hero. Data dari cache server. */
@@ -26,7 +26,7 @@ async function FeaturedAnime() {
         <Link
           key={item.slug}
           href={`/anime/${item.slug}`}
-          className={`group relative w-32 md:w-36 aspect-[3/4.2] rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700/80 shadow-md transition-all duration-300 hover:scale-105 hover:border-zinc-400 dark:hover:border-zinc-500 ${
+          className={`group relative w-32 md:w-36 aspect-[3/4.2] rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700/80 transition-colors duration-300 hover:border-zinc-400 dark:hover:border-zinc-500 ${
             idx === 1 ? '-translate-y-2' : ''
           }`}
         >
@@ -38,7 +38,7 @@ async function FeaturedAnime() {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
           <div className="absolute bottom-2 left-2 right-2">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-white bg-black/60 px-1.5 py-0.5 rounded border border-white/20 mb-1 inline-block">
+            <span className="text-[10px] font-semibold text-white bg-black/70 px-1.5 py-0.5 rounded mb-1 inline-block">
               Ongoing
             </span>
             <p className="text-[11px] font-semibold text-white truncate">{item.title}</p>
@@ -98,41 +98,30 @@ export default function AnimePage() {
       <Navbar />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
-        {/* Hero: kartu sinematik bernada merah tua, selaras dengan hero halaman komik */}
-        <div className="relative isolate overflow-hidden rounded-3xl bg-[#0d0a0a] text-white shadow-xl ring-1 ring-black/5 dark:ring-white/10">
-          <div className="absolute inset-0 -z-10" aria-hidden="true">
-            <div className="absolute -left-24 -top-28 h-80 w-80 rounded-full bg-accent-700/35 blur-3xl" />
-            <div className="absolute -bottom-32 right-0 h-80 w-96 rounded-full bg-accent-900/40 blur-3xl" />
-            <div className="absolute inset-0 bg-gradient-to-br from-accent-950/60 via-transparent to-transparent" />
-          </div>
-
+        {/* Hero: kartu gelap yang sama dengan hero halaman komik, tanpa dekorasi latar */}
+        <div className="relative overflow-hidden rounded-2xl bg-[#0d0a0a] text-white ring-1 ring-black/5 dark:ring-white/10">
           <div className="flex flex-col items-center justify-between gap-8 px-6 py-10 sm:px-10 lg:flex-row lg:px-14 lg:py-14">
             <div className="max-w-2xl space-y-5 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-accent-200 ring-1 ring-white/10 backdrop-blur">
-                <Tv className="h-3.5 w-3.5" />
-                <span>Anime Sub Indo</span>
-              </div>
-
               <h1 className="text-4xl font-black leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
-                Streaming Serial <span className="text-accent-300">Anime</span>
+                Nonton Anime Sub Indo
               </h1>
 
-              <p className="mx-auto max-w-xl text-sm leading-relaxed text-white/70 lg:mx-0">
-                Tonton episode anime ongoing dan tamat dengan server pemutar cepat, tata letak tanpa
-                distraksi, serta pembaruan rilis setiap minggu.
+              <p className="mx-auto max-w-xl text-sm leading-relaxed text-white/75 lg:mx-0">
+                Episode anime ongoing dan tamat, dengan pilihan server pemutar dan kecepatan putar
+                dari 1x sampai 2x.
               </p>
 
               <div className="flex flex-wrap items-center justify-center gap-3 pt-1 lg:justify-start">
                 <a
                   href="#anime-grid"
-                  className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-zinc-950 shadow-[0_8px_28px_rgba(255,255,255,0.12)] transition hover:-translate-y-0.5 hover:bg-zinc-200"
+                  className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-zinc-950 transition-colors hover:bg-zinc-200"
                 >
                   <PlayCircle className="h-4 w-4" />
-                  <span>Jelajahi Katalog</span>
+                  <span>Cari di Katalog Anime</span>
                 </a>
                 <Link
                   href="/"
-                  className="flex items-center gap-2 rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/15 backdrop-blur transition hover:bg-white/20"
+                  className="flex items-center gap-2 rounded-lg bg-white/15 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/20 transition-colors hover:bg-white/25"
                 >
                   <span>Baca Komik &amp; Manga</span>
                 </Link>

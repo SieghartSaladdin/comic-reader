@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { RailTab } from './recommendationTypes';
 import { RecommendationCard } from './RecommendationCard';
 
@@ -41,18 +41,13 @@ export const RecommendationRail: React.FC<RecommendationRailProps> = ({
   return (
     <section className="space-y-4" aria-label={title}>
       <div className="flex items-end justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div className="rounded-lg bg-zinc-900/5 p-1.5 text-zinc-700 dark:bg-white/10 dark:text-zinc-200">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-white md:text-2xl">
-              {title}
-            </h2>
-            {description && (
-              <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{description}</p>
-            )}
-          </div>
+        <div>
+          <h2 className="text-xl font-bold tracking-tight text-zinc-950 dark:text-white md:text-2xl">
+            {title}
+          </h2>
+          {description && (
+            <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-400">{description}</p>
+          )}
         </div>
 
         <div className="flex items-center gap-3">

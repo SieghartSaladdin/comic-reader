@@ -45,7 +45,7 @@ export const ReaderControls: React.FC<ReaderControlsProps> = ({
       {...{ [READER_BAR_ATTR]: '' }}
       onClick={(e) => e.stopPropagation()}
       aria-hidden={!isVisible}
-      className={`fixed top-0 left-0 right-0 z-40 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800 text-zinc-100 transition-transform duration-300 shadow-xl ${
+      className={`fixed top-0 left-0 right-0 z-40 bg-zinc-950 border-b border-zinc-800 text-zinc-100 transition-transform duration-300 ${
         isVisible ? 'translate-y-0' : 'pointer-events-none -translate-y-full'
       }`}
     >
@@ -65,7 +65,7 @@ export const ReaderControls: React.FC<ReaderControlsProps> = ({
               {comicTitle}
             </h1>
             <p className="text-xs text-zinc-400 truncate">
-              Ch. {chapterNumber} {chapterTitle ? `— ${chapterTitle}` : ''}
+              Ch. {chapterNumber} {chapterTitle ? `· ${chapterTitle}` : ''}
             </p>
           </div>
         </div>

@@ -71,11 +71,11 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
 
         {/* Top Badges: Type & Day */}
         <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs backdrop-blur-md uppercase tracking-wider text-white bg-black/60 border border-white/20">
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md shadow-xs uppercase tracking-wider text-white bg-black/60 border border-white/20">
             {anime.type || 'ANIME'}
           </span>
           {anime.releaseDay && (
-            <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-black/60 text-zinc-200 border border-white/15 backdrop-blur-sm shadow flex items-center gap-1">
+            <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-black/60 text-zinc-200 border border-white/15 shadow flex items-center gap-1">
               <Calendar className="w-2.5 h-2.5 text-zinc-300" />
               {anime.releaseDay}
             </span>
@@ -84,7 +84,7 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
 
         {/* Top-Right Badge: Rating if present */}
         {anime.rating && (
-          <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-black/60 backdrop-blur-md text-white text-[11px] font-bold border border-white/20">
+          <div className="absolute top-2 right-2 z-10 flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-black/60 text-white text-[11px] font-bold border border-white/20">
             <Star className="w-3 h-3 fill-white text-white" />
             <span>{anime.rating}</span>
           </div>
@@ -93,7 +93,7 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
         {/* Bottom Badge: Latest Episode */}
         {anime.latestEpisode && (
           <div className="absolute bottom-2 left-2 z-10">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-black/70 text-white text-[11px] font-semibold shadow-xs backdrop-blur-md border border-white/20">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-black/70 text-white text-[11px] font-semibold shadow-xs border border-white/20">
               <Play className="w-2.5 h-2.5 fill-white" />
               {anime.latestEpisode}
             </span>

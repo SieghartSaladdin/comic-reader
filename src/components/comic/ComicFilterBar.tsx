@@ -5,7 +5,6 @@ import {
   Filter,
   ArrowUpDown,
   RotateCcw,
-  Sparkles,
 } from 'lucide-react';
 import { CustomSelect, SelectOption } from '../ui/CustomSelect';
 import { CustomChip } from '../ui/CustomChips';
@@ -168,9 +167,8 @@ export const ComicFilterBar: React.FC<ComicFilterBarProps> = ({
 
       {/* Quick Multi-Genre Pills Bar */}
       <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
-        <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 flex items-center gap-1 shrink-0 mr-1">
-          <Sparkles className="w-3 h-3" />
-          <span>Genre Populer:</span>
+        <span className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400 shrink-0 mr-1">
+          Genre populer:
         </span>
         {ALL_GENRES.map((genre) => {
           const isSelected = currentGenres.some(

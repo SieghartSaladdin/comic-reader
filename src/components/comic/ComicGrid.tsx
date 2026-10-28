@@ -49,8 +49,7 @@ export const ComicGrid: React.FC<ComicGridProps> = ({
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         {title && (
           <div>
-            <h2 className="text-xl md:text-2xl font-bold text-zinc-950 dark:text-white tracking-tight flex items-center">
-              <span className="w-1.5 h-5 rounded-full bg-zinc-900 dark:bg-white inline-block mr-2.5" />
+            <h2 className="text-xl md:text-2xl font-bold text-zinc-950 dark:text-white tracking-tight">
               {title}
             </h2>
             {subtitle && (

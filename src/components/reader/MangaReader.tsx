@@ -137,7 +137,7 @@ export const MangaReader: React.FC<MangaReaderProps> = ({
       <button
         onClick={handleLeftZoneClick}
         aria-label={isRTL ? 'Halaman Berikutnya' : 'Halaman Sebelumnya'}
-        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/60 hover:bg-black/85 text-white/80 hover:text-white border border-white/10 items-center justify-center backdrop-blur-md transition-all hover:scale-105 active:scale-95 shadow-xl cursor-pointer"
+        className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/60 hover:bg-black/85 text-white/80 hover:text-white border border-white/10 items-center justify-center transition-colors cursor-pointer"
       >
         <ChevronLeft className="w-6 h-6" />
       </button>
@@ -146,7 +146,7 @@ export const MangaReader: React.FC<MangaReaderProps> = ({
       <button
         onClick={handleRightZoneClick}
         aria-label={isRTL ? 'Halaman Sebelumnya' : 'Halaman Berikutnya'}
-        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/60 hover:bg-black/85 text-white/80 hover:text-white border border-white/10 items-center justify-center backdrop-blur-md transition-all hover:scale-105 active:scale-95 shadow-xl cursor-pointer"
+        className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-black/60 hover:bg-black/85 text-white/80 hover:text-white border border-white/10 items-center justify-center transition-colors cursor-pointer"
       >
         <ChevronRight className="w-6 h-6" />
       </button>
@@ -176,7 +176,7 @@ export const MangaReader: React.FC<MangaReaderProps> = ({
       </div>
 
       {/* Page Badge Indicator */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 px-3.5 py-1.5 rounded-full bg-black/75 backdrop-blur-md text-white/90 text-xs font-medium tracking-wide border border-white/10 shadow-lg pointer-events-none">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 px-3.5 py-1.5 rounded-lg bg-black/80 text-white/90 text-xs font-medium tracking-wide border border-white/10 pointer-events-none">
         {currentPage} / {totalPages}{' '}
         <span className="text-zinc-400 text-[10px] uppercase font-mono ml-1">
           ({isRTL ? 'RTL' : 'LTR'})

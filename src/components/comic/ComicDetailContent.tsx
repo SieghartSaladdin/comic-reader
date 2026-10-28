@@ -96,8 +96,7 @@ export const ComicDetailContent: React.FC<ComicDetailContentProps> = ({ comic })
 
       {/* Synopsis Section */}
       <div className="bg-white dark:bg-[#121214] border border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-5 sm:p-6 space-y-3 transition-colors duration-200">
-        <h3 className="text-sm font-bold text-zinc-950 dark:text-white tracking-tight flex items-center gap-2 uppercase">
-          <span className="w-1.5 h-4 rounded-full bg-zinc-900 dark:bg-white" />
+        <h3 className="text-base font-bold text-zinc-950 dark:text-white tracking-tight">
           Sinopsis
         </h3>
         <p
@@ -120,8 +119,7 @@ export const ComicDetailContent: React.FC<ComicDetailContentProps> = ({ comic })
 
       {/* Chapters Section */}
       <section className="space-y-3">
-        <h3 className="text-base sm:text-lg font-bold text-zinc-950 dark:text-white tracking-tight flex items-center gap-2">
-          <span className="w-1.5 h-5 rounded-full bg-zinc-900 dark:bg-white" />
+        <h3 className="text-base sm:text-lg font-bold text-zinc-950 dark:text-white tracking-tight">
           Semua Chapter
         </h3>
         <ChapterList
