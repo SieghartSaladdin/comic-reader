@@ -1,58 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Comic and Anime
 
-## Getting Started
+Pembaca komik dan pemutar anime sub Indo berbasis Next.js. Daftar komik diambil dari komikindo.ch, daftar anime dari otakudesu.blog. Bookmark dan riwayat bacaan disimpan di browser, tanpa akun.
 
-First, run the development server:
+![Beranda: hero komik populer dan rekomendasi](docs/screenshots/home.webp)
+
+<p>
+  <img src="docs/screenshots/anime.webp" alt="Halaman anime: hero dan rekomendasi per genre" width="62%">
+  <img src="docs/screenshots/home-mobile.webp" alt="Beranda di layar 390 px dengan tab bar bawah" width="22%">
+</p>
+
+Semua sampul dan judul pada screenshot adalah milik pemegang hak ciptanya masing-masing.
+
+## Fitur
+
+- Dua mode baca: webtoon (scroll vertikal) dan manga (balik halaman, arah LTR atau RTL).
+- Katalog komik dengan filter genre, tipe, status, dan urutan, plus pagination.
+- Pemutar anime dengan pilihan server dan kecepatan putar 1x sampai 2x.
+- Pencarian dari mana saja: tekan `/` atau `Ctrl+K`.
+- Bookmark dan riwayat bacaan (halaman terakhir per komik), tersimpan di `localStorage`.
+- Tema terang dan gelap. Tata letak diuji sampai lebar 390 px.
+
+## Menjalankan
+
+Butuh Node.js 20 atau lebih baru.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Buka http://localhost:3000. Untuk produksi, `next.config.ts` memakai `output: "standalone"`, jadi jalur yang sudah disiapkan adalah Docker (port host 3010):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+docker compose up -d --build
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Variabel opsional: `DISABLE_CACHE_WARMUP=1` mematikan pemanasan cache saat server start.
 
-## Learn More
+## Struktur
 
-To learn more about Next.js, take a look at the following resources:
+- `src/app`: halaman (`/`, `/anime`, `/comic/[id]`, `/reader/...`, `/bookmarks`, `/history`) dan route API.
+- `src/components`: komponen UI per area (`comic`, `anime`, `reader`, `layout`, `ui`).
+- `src/services`: scraper dan parser untuk sumber data, semuanya memakai `use cache`.
+- `src/utils`, `src/hooks`, `src/types`: penyimpanan lokal, cache klien, dan tipe data.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Detail cache dan aturan menambah fitur ada di [docs/cache.md](docs/cache.md). Aturan arsitektur kode ada di [AGENTS.md](AGENTS.md).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Berkontribusi
 
-## Deploy on Vercel
+Kontribusi dalam bentuk bug report, perbaikan, atau fitur baru dipersilakan. Baca [CONTRIBUTING.md](CONTRIBUTING.md) dulu. Kalau sumber data berubah struktur dan scraper rusak, buka issue dengan URL halaman yang gagal: itu perbaikan yang paling sering dibutuhkan.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Catatan hukum
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Proyek ini tidak menyimpan atau meng-host komik, gambar, maupun video. Konten diambil saat runtime dari situs pihak ketiga yang bisa berubah atau hilang kapan saja, dan hak ciptanya milik kreator dan penerbit aslinya. Lisensi MIT hanya berlaku untuk kode di repositori ini, bukan untuk konten dari sumber tersebut. Kamu bertanggung jawab atas cara kamu memakai dan menjalankannya.
 
-## Arsitektur Cache & Performa
+## Lisensi
 
-Aplikasi memakai **Cache Components** (`cacheComponents` + `partialPrefetching` di `next.config.ts`).
-
-**Lapisan cache (dari server sampai browser)**
-
-1. **Data scraping (`use cache`)** — setiap fungsi di `src/services/*` ber-`use cache` dengan `cacheLife` dari profil di `next.config.ts`: `feed` (daftar terbaru/populer), `catalog`, `detail`, `chapter`, `search`. Yang disimpan adalah hasil parse, bukan HTML mentah. Setelah `revalidate`, data lama tetap disajikan sambil diperbarui di latar. Hasil gagal/kosong diberi umur `seconds` supaya tidak menetap.
-2. **Halaman (Partial Prerendering)** — `/`, `/anime`, `/bookmarks`, `/history` statis; `/comic/[id]`, `/reader/...`, `/anime/[slug]`, `/anime/watch/[slug]` berupa shell statis + isi di-stream (skeleton langsung tampil). `params` selalu dibaca di dalam `<Suspense>`.
-3. **API** — respons sukses memakai `cachedJson()` (`src/utils/apiResponse.ts`) dengan `Cache-Control` per profil (browser + CDN + stale-while-revalidate).
-4. **Browser** — `src/utils/clientCache.ts` (cache JSON di memori + penggabungan request), prefetch halaman katalog berikutnya, prefetch chapter berikutnya di reader (`usePrefetchNextChapter`), dan pemanasan data chapter/episode saat kursor mendekat.
-5. **Pemanasan** — `src/instrumentation.ts` + `src/utils/cacheWarmup.ts` memanaskan halaman utama saat server start dan menyegarkannya tiap 10 menit (matikan dengan `DISABLE_CACHE_WARMUP=1`).
-
-**Aturan saat menambah fitur**
-
-- Fungsi yang mengambil data dari luar: tambahkan `'use cache'`, `cacheTag(...)`, dan panggil **satu** `cacheLife('<profil>')` (pakai `if/else`, bukan ternary). Kegagalan → `cacheLife('seconds')`.
-- Jangan pakai `export const dynamic`/`revalidate`, `cookies()`, atau `headers()` di luar `<Suspense>`.
-- Jangan menghitung waktu sekarang (`Date`, relatif "x hari lalu") langsung di komponen server; lakukan di dalam fungsi `use cache`.
-- Jangan pasang CSS `filter`/`transform` pada pembungkus yang berisi elemen `fixed`.
-- Route API: panggil `unstable_rethrow(error)` di awal `catch`.
-
-**Membersihkan cache**: ubah `cacheTag`-nya lewat `revalidateTag`/`updateTag`, atau cukup restart container (cache berada di memori dan dipanaskan ulang otomatis).
+[MIT](LICENSE)
